@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  baseUrl: 'http://uccdapp.runasp.net'
+  baseUrl: 'https://uccdapp.runasp.net'
 };
