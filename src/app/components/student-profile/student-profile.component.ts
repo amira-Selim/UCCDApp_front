@@ -12,13 +12,15 @@ import { NotificationService } from '../../core/services/notification.service';
 import { IstudentProfile } from '../../core/interfaces/istudentprofile';
 import { IMyEnrollment } from '../../core/interfaces/enrollment.model';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
+import { ConfirmDialogService } from '../../core/services/confirm-dialog.service';
 
 type TabId = 'profile' | 'courses' | 'jobs' | 'volunteers' | 'wishlist';
 
 @Component({
   selector: 'app-student-profile',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, RouterLink, TranslatePipe],
+  imports: [ReactiveFormsModule, CommonModule, RouterLink, TranslatePipe, ConfirmDialogComponent],
   templateUrl: './student-profile.component.html',
   styleUrl: './student-profile.component.scss'
 })
@@ -73,6 +75,7 @@ export class StudentProfileComponent implements OnInit {
   private readonly notify = inject(NotificationService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly confirmService = inject(ConfirmDialogService);
 
   constructor(
     private fb: FormBuilder,
@@ -377,8 +380,16 @@ export class StudentProfileComponent implements OnInit {
   }
 
   // ---------------- cancel methods ----------------
-  cancelCourse(courseId: number): void {
-    if (confirm('Are you sure you want to cancel this course enrollment?')) {
+  async cancelCourse(courseId: number): Promise<void> {
+    const confirmed = await this.confirmService.confirm({
+      title: 'Cancel Course',
+      message: 'Are you sure you want to cancel this course enrollment?',
+      confirmText: 'Yes, Cancel',
+      cancelText: 'No, Keep it',
+      variant: 'danger'
+    });
+
+    if (confirmed) {
       this.coursesService.cancelEnrollment(courseId).subscribe({
         next: (res) => {
           this.notify.success('Course enrollment cancelled successfully.');
@@ -391,8 +402,16 @@ export class StudentProfileComponent implements OnInit {
     }
   }
 
-  cancelJob(applicationId: number): void {
-    if (confirm('Are you sure you want to cancel this job application?')) {
+  async cancelJob(applicationId: number): Promise<void> {
+    const confirmed = await this.confirmService.confirm({
+      title: 'Cancel Job Application',
+      message: 'Are you sure you want to cancel this job application?',
+      confirmText: 'Yes, Cancel',
+      cancelText: 'No, Keep it',
+      variant: 'danger'
+    });
+
+    if (confirmed) {
       this.jobsService.cancelApplication(applicationId).subscribe({
         next: (res) => {
           this.notify.success('Job application cancelled successfully.');
@@ -405,8 +424,16 @@ export class StudentProfileComponent implements OnInit {
     }
   }
 
-  cancelVolunteer(applicationId: number): void {
-    if (confirm('Are you sure you want to cancel this volunteer application?')) {
+  async cancelVolunteer(applicationId: number): Promise<void> {
+    const confirmed = await this.confirmService.confirm({
+      title: 'Cancel Volunteer Application',
+      message: 'Are you sure you want to cancel this volunteer application?',
+      confirmText: 'Yes, Cancel',
+      cancelText: 'No, Keep it',
+      variant: 'danger'
+    });
+
+    if (confirmed) {
       this.volunteersService.cancelApplication(applicationId).subscribe({
         next: (res) => {
           this.notify.success('Volunteer application cancelled successfully.');
