@@ -120,27 +120,13 @@ export class CoursesComponent implements OnInit {
   }
 
   setCategory(cat: string): void {
-    this.selectedCategory = cat;
-    
-    if (cat === 'Recommended' && this.recommendedCourses.length === 0 && !this.isAiLoading) {
-      this.isAiLoading = true;
-      this._aiService.getCourseRecommendations({ fieldOfInterest: '', careerGoal: '', currentLevel: 'Beginner' }).subscribe({
-        next: (res) => {
-          if (res.success && res.data) {
-            this.recommendedCourses = res.data;
-          }
-          this.isAiLoading = false;
-          this.applyFilters();
-        },
-        error: (err) => {
-          console.error('Failed to get course recommendations', err);
-          this.isAiLoading = false;
-          this.applyFilters();
-        }
-      });
-    } else {
-      this.applyFilters();
+    if (cat === 'Recommended' && this.recommendedCourses.length === 0) {
+      this.openAiModal();
+      return;
     }
+    
+    this.selectedCategory = cat;
+    this.applyFilters();
   }
 
   isWishlisted(courseId: number | undefined | null): boolean {
@@ -257,11 +243,13 @@ export class CoursesComponent implements OnInit {
       return;
     }
 
-    this.aiField = '';
-    this.aiGoal = '';
-    this.aiLevel = 'Beginner';
+    // Don't reset if already filled, allow user to adjust
+    if (!this.aiField && !this.aiGoal) {
+      this.aiField = '';
+      this.aiGoal = '';
+      this.aiLevel = 'Beginner';
+    }
     this.showAiResults = false;
-    this.recommendedCourses = [];
     this.isAiModalOpen = true;
   }
 
