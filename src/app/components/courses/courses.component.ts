@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthServiceService } from '../../core/services/auth.service';
 import { NotificationService } from '../../core/services/notification.service';
+import { AiService } from '../../core/services/ai.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
@@ -24,9 +25,11 @@ export class CoursesComponent implements OnInit {
   readonly auth = inject(AuthServiceService);
   private readonly _notify = inject(NotificationService);
   private readonly _router = inject(Router);
+  private readonly _aiService = inject(AiService);
 
   coursesList: Icources[] = [];
   filteredCourses: Icources[] = [];
+  recommendedCourses: Icources[] = [];
   enrolledCourseIds: Set<number> = new Set<number>();
   
   // Filtering states
@@ -40,6 +43,14 @@ export class CoursesComponent implements OnInit {
 
   /** Course id currently being enrolled in, used to disable the button & show a spinner while the request is in flight. */
   enrollingCourseId: number | null = null;
+
+  // AI Modal State
+  isAiModalOpen: boolean = false;
+  isGeneratingAi: boolean = false;
+  aiField: string = '';
+  aiGoal: string = '';
+  aiLevel: string = 'Beginner';
+  showAiResults: boolean = false;
 
   ngOnInit(): void {
     if (this.auth.isLoggedIn() && this.auth.hasRole('Student')) {
@@ -198,5 +209,53 @@ export class CoursesComponent implements OnInit {
     setTimeout(() => {
       this.selectedCourse = null;
     }, 300); // Wait for transition
+  }
+
+  openAiModal(): void {
+    if (!this.auth.isLoggedIn()) {
+      this._notify.info('Please sign in to get recommendations.');
+      this._router.navigate(['/auth/login'], { queryParams: { returnUrl: '/courses' } });
+      return;
+    }
+    
+    if (!this.auth.hasRole('Student')) {
+      this._notify.info('Only students can get AI recommendations. Please complete your profile.');
+      return;
+    }
+
+    this.aiField = '';
+    this.aiGoal = '';
+    this.aiLevel = 'Beginner';
+    this.showAiResults = false;
+    this.recommendedCourses = [];
+    this.isAiModalOpen = true;
+  }
+
+  closeAiModal(): void {
+    this.isAiModalOpen = false;
+  }
+
+  submitAiForm(): void {
+    this.isGeneratingAi = true;
+    const request = {
+      fieldOfInterest: this.aiField,
+      careerGoal: this.aiGoal,
+      currentLevel: this.aiLevel
+    };
+
+    this._aiService.getCourseRecommendations(request).subscribe({
+      next: (res) => {
+        if (res.success && res.data) {
+          this.recommendedCourses = res.data;
+          this.showAiResults = true;
+        }
+        this.isGeneratingAi = false;
+      },
+      error: (err) => {
+        console.error('Failed to get course recommendations', err);
+        this._notify.error('Failed to get recommendations from AI.');
+        this.isGeneratingAi = false;
+      }
+    });
   }
 }

@@ -20,4 +20,8 @@ export class AiService {
   getRecommendations(): Observable<any> {
     return this._HttpClient.get(`${environment.baseUrl}/api/Ai/recommendations`);
   }
+
+  getCourseRecommendations(request: any): Observable<any> {
+    return this._HttpClient.post(`${environment.baseUrl}/api/Ai/recommendations/courses`, request);
+  }
 }

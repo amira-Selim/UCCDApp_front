@@ -67,7 +67,8 @@ export class StudentProfileComponent implements OnInit {
   wishlistLoading = true;
   wishlistError = false;
 
-  recommendations: any[] = [];
+  jobRecommendations: any[] = [];
+  courseRecommendations: any[] = [];
   recommendationsLoading = false;
   recommendationsError = false;
   recommendationsLoaded = false;
@@ -391,14 +392,29 @@ export class StudentProfileComponent implements OnInit {
     if (this.recommendationsLoaded) return;
     this.recommendationsLoading = true;
     this.recommendationsError = false;
+
+    // Fetch jobs first
     this.aiService.getRecommendations().subscribe({
       next: (res) => {
-        this.recommendations = res?.data || [];
-        this.recommendationsLoading = false;
-        this.recommendationsLoaded = true;
+        this.jobRecommendations = res?.data || [];
+        
+        // Then fetch courses with generic answers
+        const genericRequest = { fieldOfInterest: '', careerGoal: '', currentLevel: 'Beginner' };
+        this.aiService.getCourseRecommendations(genericRequest).subscribe({
+          next: (cRes) => {
+            this.courseRecommendations = cRes?.data || [];
+            this.recommendationsLoading = false;
+            this.recommendationsLoaded = true;
+          },
+          error: (cErr) => {
+            console.error('Error fetching course recommendations', cErr);
+            this.recommendationsLoading = false;
+            this.recommendationsLoaded = true; // Jobs succeeded, so we show them at least
+          }
+        });
       },
       error: (err) => {
-        console.error('Error fetching AI recommendations', err);
+        console.error('Error fetching AI job recommendations', err);
         this.recommendationsError = true;
         this.recommendationsLoading = false;
       }

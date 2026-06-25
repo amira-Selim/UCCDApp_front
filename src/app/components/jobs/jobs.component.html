@@ -35,6 +35,57 @@
 
       <!-- Jobs List -->
       <div class="col-lg-9">
+        
+        <!-- AI Recommendations Section -->
+        <div class="mb-5" *ngIf="auth.isLoggedIn() && auth.hasRole('Student')">
+          <div class="d-flex align-items-center mb-4">
+            <h4 class="fw-bold text-dark font-heading mb-0"><i class="fa-solid fa-wand-magic-sparkles text-main me-2"></i> ✨ Recommended For You</h4>
+            <span class="badge bg-main-light text-main ms-3">AI Matches</span>
+          </div>
+
+          <div *ngIf="isAiLoading" class="text-center py-5 bg-white rounded-4 border shadow-sm mb-4">
+            <div class="spinner-border text-main" role="status"></div>
+            <p class="text-muted mt-2 mb-0">Analyzing your skills and finding the best matches...</p>
+          </div>
+
+          <div *ngIf="!isAiLoading && recommendedJobs.length > 0" class="row g-4 mb-4">
+            @for (job of recommendedJobs; track job.id) {
+              <div class="col-md-6">
+                <div class="premium-card p-4 border-0 job-card transition-normal hover-lift h-100" style="background: linear-gradient(145deg, #ffffff, #f8f9fa); border-top: 4px solid var(--bs-primary) !important;">
+                  <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="company-logo bg-main-light text-main rounded-circle d-flex align-items-center justify-content-center fw-bold fs-4 shadow-sm flex-shrink-0" style="width: 50px; height: 50px;">
+                      {{ job.companyName.charAt(0).toUpperCase() }}
+                    </div>
+                    <div>
+                      <h5 class="fw-bold font-heading mb-1 text-dark text-truncate" style="max-width: 200px;">{{ job.title }}</h5>
+                      <h6 class="text-muted small mb-0">{{ job.companyName }}</h6>
+                    </div>
+                  </div>
+                  <div class="d-flex flex-wrap gap-2 small text-muted mb-4">
+                    <span class="badge bg-light text-dark border"><i class="fa-solid fa-location-dot me-1"></i> {{ job.location }}</span>
+                    <span class="badge bg-light text-dark border">{{ job.type }}</span>
+                  </div>
+                  <button class="btn btn-outline-main w-100 rounded-pill py-2 fw-medium mt-auto" 
+                          (click)="openJobDetails(job)"
+                          [disabled]="appliedJobIds.has(job.id)">
+                    {{ appliedJobIds.has(job.id) ? 'Already Applied' : 'View & Apply' }}
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+          
+          <div *ngIf="!isAiLoading && recommendedJobs.length === 0" class="alert alert-light border rounded-3 text-muted">
+            <i class="fa-solid fa-circle-info me-2"></i> No recommendations found at this time. Make sure your profile skills are updated!
+          </div>
+          
+          <hr class="my-5 border-light">
+        </div>
+
+        <div class="d-flex align-items-center mb-4">
+          <h4 class="fw-bold text-dark font-heading mb-0">All Jobs</h4>
+        </div>
+
         <div class="row g-4">
           @for (job of filteredJobs; track job.id) {
             <div class="col-12">

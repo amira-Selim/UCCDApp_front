@@ -24,7 +24,9 @@ export class JobsComponent implements OnInit {
 
   jobsList: IJob[] = [];
   filteredJobs: IJob[] = [];
+  recommendedJobs: IJob[] = [];
   appliedJobIds: Set<number> = new Set<number>();
+  isAiLoading: boolean = false;
   
   // Filtering states
   searchTerm: string = '';
@@ -74,12 +76,31 @@ export class JobsComponent implements OnInit {
     }
   }
 
+  fetchRecommendations(): void {
+    if (!this.auth.isLoggedIn() || !this.auth.hasRole('Student')) return;
+    
+    this.isAiLoading = true;
+    this._aiService.getRecommendations().subscribe({
+      next: (res) => {
+        if (res.success && res.data) {
+          this.recommendedJobs = res.data;
+        }
+        this.isAiLoading = false;
+      },
+      error: (err) => {
+        console.error('Failed to load job recommendations', err);
+        this.isAiLoading = false;
+      }
+    });
+  }
+
   fetchJobs(): void {
     this._JobsService.getAllJobs().subscribe({
       next: (res) => {
         this.jobsList = res;
         this.applyFilters();
         this.checkQueryParams();
+        this.fetchRecommendations();
       },
       error: (err) => {
         console.error(err);

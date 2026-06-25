@@ -442,8 +442,10 @@
                   <button class="btn btn-sm btn-outline-main" (click)="loadRecommendations()">Try Again</button>
                 </div>
               } @else {
-                <div class="row g-4">
-                  <div class="col-md-6 col-lg-12" *ngFor="let job of recommendations">
+                <!-- Jobs Section -->
+                <h5 class="fw-bold text-dark mt-4 mb-3"><i class="fa-solid fa-briefcase text-main me-2"></i> Recommended Jobs</h5>
+                <div class="row g-4 mb-5">
+                  <div class="col-md-6 col-lg-12" *ngFor="let job of jobRecommendations">
                     <div class="premium-card p-4 border border-main border-opacity-25 rounded-4 shadow-sm hover-lift bg-white h-100 position-relative overflow-hidden">
                       <div class="position-absolute top-0 end-0 bg-warning text-dark px-3 py-1 rounded-bottom-start small fw-bold shadow-sm">
                         <i class="fa-solid fa-star me-1"></i> Top Match
@@ -466,10 +468,36 @@
                       </div>
                     </div>
                   </div>
-                  <div *ngIf="recommendations.length === 0" class="text-center py-5 w-100">
-                    <i class="fa-solid fa-robot fs-1 text-muted opacity-25 mb-3 d-block"></i>
-                    <p class="text-muted mb-3">Make sure your profile is fully complete so our AI can find matches for you.</p>
-                    <button class="btn btn-outline-main rounded-pill px-4" (click)="setTab('profile')">Update Profile</button>
+                  <div *ngIf="jobRecommendations.length === 0" class="col-12 text-center py-4 bg-white rounded-4 border">
+                    <p class="text-muted mb-0">No job matches found. Try updating your profile skills.</p>
+                  </div>
+                </div>
+
+                <!-- Courses Section -->
+                <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-book-open text-main me-2"></i> Recommended Courses</h5>
+                <div class="row g-4">
+                  <div class="col-md-6 col-lg-12" *ngFor="let course of courseRecommendations">
+                    <div class="premium-card p-4 border border-main border-opacity-25 rounded-4 shadow-sm hover-lift bg-white h-100 position-relative overflow-hidden">
+                      <div class="position-absolute top-0 end-0 bg-success text-white px-3 py-1 rounded-bottom-start small fw-bold shadow-sm">
+                        <i class="fa-solid fa-check-double me-1"></i> Suggested
+                      </div>
+                      <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="company-logo bg-light text-success rounded-circle d-flex align-items-center justify-content-center fw-bold fs-4 shadow-sm" style="width: 55px; height: 55px;">
+                          <i class="fa-solid fa-graduation-cap"></i>
+                        </div>
+                        <div>
+                          <h5 class="fw-bold text-dark mb-1">{{ course.name }}</h5>
+                          <h6 class="text-muted mb-0 small">Duration: {{ course.duration }} Days</h6>
+                        </div>
+                      </div>
+                      <div class="d-flex justify-content-between align-items-center mt-3">
+                        <span class="badge bg-main-light text-main rounded-pill">{{ course.type }}</span>
+                        <a [routerLink]="['/courses']" class="btn btn-sm btn-outline-main rounded-pill px-3">Explore Courses</a>
+                      </div>
+                    </div>
+                  </div>
+                  <div *ngIf="courseRecommendations.length === 0" class="col-12 text-center py-4 bg-white rounded-4 border">
+                    <p class="text-muted mb-0">No course matches found. Try updating your profile skills.</p>
                   </div>
                 </div>
               }
