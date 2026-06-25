@@ -72,8 +72,11 @@
               <button class="nav-link text-start mb-2 fw-medium" [class.active]="activeTab === 'volunteers'" (click)="setTab('volunteers')">
                 <i class="fa-solid fa-handshake-angle me-2 w-20px text-center"></i> {{ 'profile.volunteerWork' | translate }}
               </button>
-              <button class="nav-link text-start fw-medium" [class.active]="activeTab === 'wishlist'" (click)="setTab('wishlist')">
+              <button class="nav-link text-start mb-2 fw-medium" [class.active]="activeTab === 'wishlist'" (click)="setTab('wishlist')">
                 <i class="fa-regular fa-heart me-2 w-20px text-center"></i> {{ 'profile.savedItems' | translate }}
+              </button>
+              <button class="nav-link text-start fw-medium" style="background: linear-gradient(45deg, #FF6B6B, #8A2BE2); color: white;" [class.opacity-75]="activeTab !== 'recommendations'" (click)="setTab('recommendations')">
+                <i class="fa-solid fa-wand-magic-sparkles me-2 w-20px text-center text-white"></i> Recommendations
               </button>
             </div>
           </div>
@@ -413,6 +416,61 @@
                 <div *ngIf="wishlist.length === 0" class="text-center py-5">
                   <i class="fa-regular fa-heart fs-1 text-muted opacity-25 mb-3"></i>
                   <h6 class="text-muted">Your wishlist is empty</h6>
+                </div>
+              }
+            </div>
+
+            <!-- Tab: Recommendations -->
+            <div *ngIf="activeTab === 'recommendations'" class="animate-fade-in">
+              <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                <div>
+                  <h4 class="fw-bold font-heading mb-1" style="background: -webkit-linear-gradient(45deg, #FF6B6B, #8A2BE2); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                    ✨ Recommended for You
+                  </h4>
+                  <p class="text-muted small mb-0">AI-powered suggestions based on your skills and profile.</p>
+                </div>
+              </div>
+
+              @if (recommendationsLoading) {
+                <div class="text-center py-5">
+                  <div class="spinner-border spinner-border-sm me-2 text-main" role="status" style="color: #8A2BE2 !important;"></div>
+                  <span class="text-muted fw-medium">AI is analyzing your profile...</span>
+                </div>
+              } @else if (recommendationsError) {
+                <div class="text-center py-4">
+                  <p class="text-danger mb-2">Couldn't load your recommendations right now.</p>
+                  <button class="btn btn-sm btn-outline-main" (click)="loadRecommendations()">Try Again</button>
+                </div>
+              } @else {
+                <div class="row g-4">
+                  <div class="col-md-6 col-lg-12" *ngFor="let job of recommendations">
+                    <div class="premium-card p-4 border border-main border-opacity-25 rounded-4 shadow-sm hover-lift bg-white h-100 position-relative overflow-hidden">
+                      <div class="position-absolute top-0 end-0 bg-warning text-dark px-3 py-1 rounded-bottom-start small fw-bold shadow-sm">
+                        <i class="fa-solid fa-star me-1"></i> Top Match
+                      </div>
+                      <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="company-logo bg-light text-main rounded-circle d-flex align-items-center justify-content-center fw-bold fs-4 shadow-sm" style="width: 55px; height: 55px;">
+                          {{ job.companyName?.charAt(0)?.toUpperCase() || 'J' }}
+                        </div>
+                        <div>
+                          <h5 class="fw-bold text-dark mb-1">{{ job.title }}</h5>
+                          <h6 class="text-muted mb-0 small">{{ job.companyName }} &bull; {{ job.location || 'Remote' }}</h6>
+                        </div>
+                      </div>
+                      <p class="text-muted small mb-3 text-truncate-2" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                        {{ job.description }}
+                      </p>
+                      <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-main-light text-main rounded-pill">{{ job.type || 'FullTime' }}</span>
+                        <a [routerLink]="['/jobs']" [queryParams]="{ openTitle: job.title }" class="btn btn-sm btn-main rounded-pill px-3">View Details</a>
+                      </div>
+                    </div>
+                  </div>
+                  <div *ngIf="recommendations.length === 0" class="text-center py-5 w-100">
+                    <i class="fa-solid fa-robot fs-1 text-muted opacity-25 mb-3 d-block"></i>
+                    <p class="text-muted mb-3">Make sure your profile is fully complete so our AI can find matches for you.</p>
+                    <button class="btn btn-outline-main rounded-pill px-4" (click)="setTab('profile')">Update Profile</button>
+                  </div>
                 </div>
               }
             </div>

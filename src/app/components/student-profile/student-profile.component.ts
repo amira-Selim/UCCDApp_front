@@ -14,8 +14,9 @@ import { IMyEnrollment } from '../../core/interfaces/enrollment.model';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { ConfirmDialogService } from '../../core/services/confirm-dialog.service';
+import { AiService } from '../../core/services/ai.service';
 
-type TabId = 'profile' | 'courses' | 'jobs' | 'volunteers' | 'wishlist';
+type TabId = 'profile' | 'courses' | 'jobs' | 'volunteers' | 'wishlist' | 'recommendations';
 
 @Component({
   selector: 'app-student-profile',
@@ -66,6 +67,11 @@ export class StudentProfileComponent implements OnInit {
   wishlistLoading = true;
   wishlistError = false;
 
+  recommendations: any[] = [];
+  recommendationsLoading = false;
+  recommendationsError = false;
+  recommendationsLoaded = false;
+
   private readonly profileApi = inject(ShowProfileService);
   private readonly coursesService = inject(CoursesService);
   private readonly jobsService = inject(JobsService);
@@ -76,6 +82,7 @@ export class StudentProfileComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly confirmService = inject(ConfirmDialogService);
+  private readonly aiService = inject(AiService);
 
   constructor(
     private fb: FormBuilder,
@@ -377,6 +384,25 @@ export class StudentProfileComponent implements OnInit {
     this.loadJobApplications();
     this.loadVolunteerApplications();
     this.loadWishlist();
+    if (this.activeTab === 'recommendations') this.loadRecommendations();
+  }
+
+  loadRecommendations(): void {
+    if (this.recommendationsLoaded) return;
+    this.recommendationsLoading = true;
+    this.recommendationsError = false;
+    this.aiService.getRecommendations().subscribe({
+      next: (res) => {
+        this.recommendations = res?.data || [];
+        this.recommendationsLoading = false;
+        this.recommendationsLoaded = true;
+      },
+      error: (err) => {
+        console.error('Error fetching AI recommendations', err);
+        this.recommendationsError = true;
+        this.recommendationsLoading = false;
+      }
+    });
   }
 
   // ---------------- cancel methods ----------------
@@ -449,6 +475,9 @@ export class StudentProfileComponent implements OnInit {
   // ---------------- template helpers ----------------
   setTab(tab: TabId): void {
     this.activeTab = tab;
+    if (tab === 'recommendations' && !this.recommendationsLoaded) {
+      this.loadRecommendations();
+    }
   }
 
   goToCourses(): void {

@@ -1,6 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JobsService, IJob } from '../../core/services/jobs.service';
+import { AiService } from '../../core/services/ai.service';
 import { AuthServiceService } from '../../core/services/auth.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -18,6 +19,7 @@ export class JobsComponent implements OnInit {
   private readonly _JobsService = inject(JobsService);
   private readonly route = inject(ActivatedRoute);
   private readonly _router = inject(Router);
+  private readonly _aiService = inject(AiService);
   readonly auth = inject(AuthServiceService);
 
   jobsList: IJob[] = [];
@@ -35,6 +37,7 @@ export class JobsComponent implements OnInit {
   coverLetter: string = '';
   cvFile: File | null = null;
   isApplying: boolean = false;
+  isGeneratingAi: boolean = false;
 
   // Custom Toast state
   toastMessage: string = '';
@@ -196,6 +199,26 @@ export class JobsComponent implements OnInit {
         }
         this.isApplying = false;
         this.closeModal();
+      }
+    });
+  }
+
+  generateAiCoverLetter(): void {
+    if (!this.selectedJob) return;
+
+    this.isGeneratingAi = true;
+    this._aiService.generateCoverLetter(this.selectedJob.id).subscribe({
+      next: (res) => {
+        if (res.success && res.data && res.data.resultText) {
+          this.coverLetter = res.data.resultText;
+          this.displayToast('Cover letter generated! Feel free to edit it.', 'success');
+        }
+        this.isGeneratingAi = false;
+      },
+      error: (err) => {
+        console.error(err);
+        this.displayToast('Failed to generate cover letter. Try again.', 'error');
+        this.isGeneratingAi = false;
       }
     });
   }
