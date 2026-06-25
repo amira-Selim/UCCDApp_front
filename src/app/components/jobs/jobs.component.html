@@ -62,6 +62,20 @@
             <p class="text-muted mt-2 mb-0">Analyzing your skills and finding the best matches...</p>
           </div>
 
+          <div *ngIf="!isAiLoading" class="alert bg-white border border-main border-opacity-25 rounded-4 shadow-sm mb-4 d-flex flex-column flex-md-row align-items-center justify-content-between p-4">
+            <div class="d-flex align-items-center mb-3 mb-md-0">
+              <div class="bg-main-light text-main rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px; min-width: 48px;">
+                <i class="fa-solid fa-user-pen fs-5"></i>
+              </div>
+              <div>
+                <h6 class="fw-bold text-dark mb-1">Want more accurate results?</h6>
+                <p class="text-muted mb-0 small">Complete your professional profile details (skills, goals, etc.) to get highly tailored job matches.</p>
+              </div>
+            </div>
+            <a routerLink="/student-profile" class="btn btn-outline-main rounded-pill fw-bold px-4 text-nowrap">
+              Complete Profile <i class="fa-solid fa-arrow-right ms-1"></i>
+            </a>
+          </div>
           <div *ngIf="!isAiLoading && recommendedJobs.length > 0" class="row g-4 mb-4">
             @for (job of recommendedJobs; track job.id) {
               <div class="col-md-6">
