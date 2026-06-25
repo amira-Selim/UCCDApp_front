@@ -86,15 +86,15 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
       this.router.navigate(['/admin/courses', notif.relatedCourseId]);
     } else if (notif.title === 'New Enrollment Request' || notif.message.includes('enrollment request')) {
       this.router.navigate(['/admin/courses']);
-    } else if (notif.type === 'Message') {
+    } else if (notif.type?.toLowerCase() === 'message' || notif.title === 'New Contact Message' || notif.message.includes('received a new message')) {
       this.router.navigate(['/admin/messages']);
-    } else if (notif.type === 'VolunteerApplication') {
+    } else if (notif.type?.toLowerCase() === 'volunteerapplication' || notif.title === 'New Volunteer Application') {
       if (notif.relatedVolunteerId) {
         this.router.navigate(['/admin/volunteers', notif.relatedVolunteerId]);
       } else {
         this.router.navigate(['/admin/volunteers']);
       }
-    } else if (notif.type === 'JobApplication') {
+    } else if (notif.type?.toLowerCase() === 'jobapplication' || notif.title === 'New Job Application') {
       if (notif.relatedJobId) {
         this.router.navigate(['/admin/jobs', notif.relatedJobId]);
       } else {
