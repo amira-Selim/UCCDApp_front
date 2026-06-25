@@ -281,7 +281,8 @@ export class CoursesComponent implements OnInit {
       next: (res) => {
         if (res.success && res.data) {
           this.recommendedCourses = res.data;
-          this.showAiResults = true;
+          this.isAiModalOpen = false; // Close modal
+          this.setCategory('Recommended'); // Switch category to show results
         }
         this.isGeneratingAi = false;
       },
