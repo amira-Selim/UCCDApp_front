@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { JobsService, IJob } from '../../core/services/jobs.service';
 import { AiService } from '../../core/services/ai.service';
 import { AuthServiceService } from '../../core/services/auth.service';
@@ -10,7 +10,7 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-jobs',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './jobs.component.html',
   styleUrl: './jobs.component.scss'
 })

@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 import { Icources } from '../../core/interfaces/icources';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthServiceService } from '../../core/services/auth.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { AiService } from '../../core/services/ai.service';
@@ -14,7 +14,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 @Component({
   selector: 'app-courses',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe],
+  imports: [CommonModule, FormsModule, RouterModule, TranslatePipe],
   templateUrl: './courses.component.html',
   styleUrl: './courses.component.scss'
 })
