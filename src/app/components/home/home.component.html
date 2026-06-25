@@ -1,0 +1,189 @@
+<!-- Hero Section -->
+<section class="p-0 position-relative">
+  <div class="container-fluid p-0 hero-carousel-wrapper">
+    <owl-carousel-o [options]="customOptionsTop">
+      <ng-template carouselSlide>
+        <div class="hero-slide" style="background-image: url('./assets/images/team 1.jpg');">
+          <div class="hero-overlay"></div>
+          <div class="container hero-content text-center text-white">
+            <h1 class="display-3 fw-bold mb-3 animate-fade-in">Empower Your Career</h1>
+            <p class="lead mb-4 animate-fade-in" style="animation-delay: 0.2s;">Discover professional training, job opportunities, and personalized career coaching.</p>
+            <div class="d-flex justify-content-center gap-3 animate-fade-in" style="animation-delay: 0.4s;">
+              @if (!_authService.isLoggedIn()) {
+                <a routerLink="/auth/register" class="btn btn-main btn-lg px-5 rounded-pill shadow-lg">Get Started</a>
+              } @else {
+                <a [routerLink]="_authService.isAdmin() ? '/admin/dashboard' : '/student-profile'" class="btn btn-main btn-lg px-5 rounded-pill shadow-lg">
+                  {{ _authService.isAdmin() ? 'Dashboard' : 'My Profile' }}
+                </a>
+              }
+              <a routerLink="/courses" class="btn btn-outline-light btn-lg px-5 rounded-pill shadow-lg">Explore Courses</a>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template carouselSlide>
+        <div class="hero-slide" style="background-image: url('./assets/images/team 2.jpg');">
+          <div class="hero-overlay"></div>
+          <div class="container hero-content text-center text-white">
+            <h1 class="display-3 fw-bold mb-3">Bridge The Gap</h1>
+            <p class="lead mb-4">Connecting university graduates directly with the labor market.</p>
+            <a routerLink="/jobs" class="btn btn-main btn-lg px-5 rounded-pill shadow-lg">Find Opportunities</a>
+          </div>
+        </div>
+      </ng-template>
+    </owl-carousel-o>
+  </div>
+</section>
+
+<!-- Director's Word -->
+<section class="director-section py-5 bg-white position-relative overflow-hidden">
+  <div class="container position-relative z-1 my-4">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-4 text-center">
+        <div class="director-img-wrapper position-relative mx-auto" style="max-width: 320px;">
+          <div class="img-backdrop bg-main position-absolute rounded-circle"></div>
+          <img src="./assets/images/Sherif Shawky.jpeg" alt="Prof. Dr. Sherif Shawky" class="img-fluid rounded-circle shadow-lg position-relative border border-4 border-white" style="z-index: 2;" />
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <div class="director-card p-5 rounded-4 shadow-sm border border-light bg-light position-relative">
+          <i class="fa-solid fa-quote-left text-main opacity-25 position-absolute" style="top: 30px; left: 30px; font-size: 3rem;"></i>
+          <h2 class="text-dark fw-bold mb-4 font-heading" style="padding-left: 2rem;">A Word from the Director</h2>
+          <p class="text-muted lh-lg mb-4" style="font-size: 1.1rem; padding-left: 2rem;">
+            "The universities in the area are dedicated to preparing our graduates for the professional world by providing training programs in suitable careers and skills. We bridge the gap between academic knowledge and market requirements, ensuring our students are ready to excel and innovate. We wish them success and future growth together."
+          </p>
+          <div style="padding-left: 2rem;">
+            <h5 class="fw-bold text-dark mb-1">Prof. Dr. Sherif Shawky</h5>
+            <span class="text-main fw-medium">Center's Director</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Services Grid -->
+<section class="services-section py-5 bg-light">
+  <div class="container py-4">
+    <div class="text-center mb-5">
+      <h2 class="fw-bold font-heading text-dark position-relative d-inline-block pb-2 mb-3">
+        Our Premium Services
+        <span class="position-absolute bottom-0 start-50 translate-middle-x bg-main rounded-pill" style="width: 50px; height: 4px;"></span>
+      </h2>
+      <p class="text-muted lead mx-auto" style="max-width: 600px;">
+        Comprehensive career development programs designed to set you up for long-term professional success.
+      </p>
+    </div>
+
+    <div class="row g-4">
+      <!-- Service Cards Loop (Hardcoded for premium visual layout) -->
+      <div class="col-lg-3 col-md-6" *ngFor="let service of [
+        {title: 'Career Shift Toolkit', img: 'Career-Shift-Toolkit.jpg'},
+        {title: 'Choosing Your Major', img: 'Choosing-Your-Major.jpg'},
+        {title: 'Informational Interview', img: 'Informational-Interview.jpg'},
+        {title: 'Job Shadowing', img: 'Job-Shadowing.jpg'},
+        {title: 'Practice Interview', img: 'Practice-Interview.jpg'},
+        {title: 'Consultation', img: 'Walk-in-Consultation.jpg'},
+        {title: 'Resume & LinkedIn', img: 'Resume-And-Cover-Letter-Development.jpg'},
+        {title: 'Learning English', img: 'Learning-English.jpg'}
+      ]">
+        <div class="premium-card h-100 border-0 service-card group cursor-pointer text-center">
+          <div class="overflow-hidden position-relative">
+            <img [src]="'./assets/images/' + service.img" class="card-img-top w-100 object-fit-cover transition-normal" style="height: 180px;" [alt]="service.title" />
+            <div class="service-overlay position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-flex align-items-center justify-content-center opacity-0 transition-normal">
+              <span class="btn btn-light rounded-pill btn-sm fw-medium px-3">Learn More</span>
+            </div>
+          </div>
+          <div class="card-body p-4 bg-white">
+            <h6 class="card-title fw-bold m-0 font-heading">{{ service.title }}</h6>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials (New Feature) -->
+<section class="testimonials-section py-5 bg-white">
+  <div class="container py-4">
+    <div class="text-center mb-5">
+      <h2 class="fw-bold font-heading text-dark position-relative d-inline-block pb-2 mb-3">
+        Student Success Stories
+        <span class="position-absolute bottom-0 start-50 translate-middle-x bg-main rounded-pill" style="width: 50px; height: 4px;"></span>
+      </h2>
+    </div>
+
+    <owl-carousel-o [options]="testimonialOptions">
+      <ng-template carouselSlide *ngFor="let t of testimonials">
+        <div class="premium-card p-4 h-100 mx-2 text-center my-3">
+          <div class="mb-3 text-warning">
+            <i class="fa-solid fa-star" *ngFor="let i of [1,2,3,4,5]"></i>
+          </div>
+          <p class="text-muted fst-italic mb-4">"{{ t.text }}"</p>
+          <div class="d-flex align-items-center justify-content-center gap-3">
+            <img [src]="t.image" class="rounded-circle shadow-sm" style="width: 50px; height: 50px; object-fit: cover;" [alt]="t.name">
+            <div class="text-start">
+              <h6 class="mb-0 fw-bold">{{ t.name }}</h6>
+              <small class="text-muted" style="font-size: 0.8rem;">{{ t.role }}</small>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </owl-carousel-o>
+  </div>
+</section>
+
+<!-- Core Principles -->
+<section class="principles-section py-5 bg-main-light">
+  <div class="container py-4 text-center">
+    <div class="text-center mb-5">
+      <h2 class="fw-bold font-heading text-dark position-relative d-inline-block pb-2 mb-3">
+        Our Core Principles
+        <span class="position-absolute bottom-0 start-50 translate-middle-x bg-main rounded-pill" style="width: 50px; height: 4px;"></span>
+      </h2>
+      <p class="text-muted lead mx-auto">Guiding our growth and success</p>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+      <div class="col-md-4">
+        <div class="premium-card h-100 p-5 text-center transition-normal hover-lift">
+          <div class="icon-circle mx-auto mb-4 bg-light text-main rounded-circle d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; font-size: 2rem;">
+            <i class="fa-solid fa-eye"></i>
+          </div>
+          <h4 class="fw-bold font-heading mb-3">Vision</h4>
+          <p class="text-muted">
+            To provide quality career development services to USC students and graduates to bridge the gap between university and labor market.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="premium-card h-100 p-5 text-center bg-main text-white shadow-lg border-0 transform-scale">
+          <div class="icon-circle mx-auto mb-4 bg-white text-main rounded-circle d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; font-size: 2rem;">
+            <i class="fa-solid fa-crosshairs"></i>
+          </div>
+          <h4 class="fw-bold font-heading mb-3">Mission</h4>
+          <p class="text-white-50">
+            To empower students with the essential skills, guidance, and opportunities needed to thrive in competitive professional environments.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="premium-card h-100 p-5 text-center transition-normal hover-lift">
+          <div class="icon-circle mx-auto mb-4 bg-light text-main rounded-circle d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; font-size: 2rem;">
+            <i class="fa-solid fa-gem"></i>
+          </div>
+          <h4 class="fw-bold font-heading mb-3">Values</h4>
+          <ul class="list-unstyled text-start d-inline-block mx-auto text-muted">
+            <li class="mb-2"><i class="fa-solid fa-circle-check text-success me-2"></i> Student Focus</li>
+            <li class="mb-2"><i class="fa-solid fa-circle-check text-success me-2"></i> Equity</li>
+            <li class="mb-2"><i class="fa-solid fa-circle-check text-success me-2"></i> Cooperation</li>
+            <li class="mb-2"><i class="fa-solid fa-circle-check text-success me-2"></i> Quality</li>
+            <li><i class="fa-solid fa-circle-check text-success me-2"></i> Innovation</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,133 @@
+<div class="page-head mb-4">
+  <h3 class="fw-bold mb-1">Dashboard</h3>
+  <p class="text-muted mb-0">Overview of students, courses, jobs, volunteering and messages.</p>
+</div>
+
+<div class="alert alert-danger" *ngIf="error()">
+  {{ error() }}
+  <button class="btn btn-sm btn-outline-danger ms-2" (click)="loadStats()">Retry</button>
+</div>
+
+<!-- Stat cards -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-lg-3">
+    <app-stat-card label="Students" [value]="stats()?.studentsCount ?? 0" icon="fa-solid fa-user-graduate" colorClass="main" [loading]="loading()"></app-stat-card>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <app-stat-card label="Courses" [value]="stats()?.coursesCount ?? 0" icon="fa-solid fa-book" colorClass="info" [loading]="loading()"></app-stat-card>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <app-stat-card label="Job Opportunities" [value]="stats()?.jobsCount ?? 0" [trend]="(stats()?.approvedJobsCount ?? 0) + ' approved'" icon="fa-solid fa-briefcase" colorClass="success" [loading]="loading()"></app-stat-card>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <app-stat-card label="Volunteer Opportunities" [value]="stats()?.volunteerOpportunitiesCount ?? 0" [trend]="(stats()?.activeVolunteerOpportunitiesCount ?? 0) + ' active'" icon="fa-solid fa-handshake-angle" colorClass="warning" [loading]="loading()"></app-stat-card>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-lg-3">
+    <app-stat-card label="Job Applicants" [value]="stats()?.totalJobApplicants ?? 0" icon="fa-solid fa-file-circle-check" colorClass="main" [loading]="loading()"></app-stat-card>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <app-stat-card label="Total Messages" [value]="stats()?.messagesCount ?? 0" icon="fa-solid fa-envelope" colorClass="info" [loading]="loading()"></app-stat-card>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <app-stat-card label="Unread Messages" [value]="stats()?.unreadMessagesCount ?? 0" icon="fa-solid fa-envelope-open-text" colorClass="danger" [loading]="loading()"></app-stat-card>
+  </div>
+</div>
+
+<!-- Breakdown widgets -->
+<div class="row g-3 mb-4">
+  <div class="col-lg-6">
+    <div class="widget-card">
+      <h6 class="widget-title">Students by Faculty</h6>
+      <div class="bar-row" *ngFor="let item of stats()?.facultyBreakdown">
+        <span class="bar-label">{{ item.faculty }}</span>
+        <div class="bar-track">
+          <div class="bar-fill" [style.width.%]="(item.count / maxCount(stats()?.facultyBreakdown)) * 100"></div>
+        </div>
+        <span class="bar-value">{{ item.count }}</span>
+      </div>
+      <p class="text-muted small mb-0" *ngIf="!loading() && (!stats()?.facultyBreakdown || stats()?.facultyBreakdown?.length === 0)">No student data yet.</p>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="widget-card">
+      <h6 class="widget-title">Courses by Type</h6>
+      <div class="bar-row" *ngFor="let item of stats()?.courseTypeBreakdown">
+        <span class="bar-label">{{ item.type }}</span>
+        <div class="bar-track">
+          <div class="bar-fill bar-fill-alt" [style.width.%]="(item.count / maxCount(stats()?.courseTypeBreakdown)) * 100"></div>
+        </div>
+        <span class="bar-value">{{ item.count }}</span>
+      </div>
+      <p class="text-muted small mb-0" *ngIf="!loading() && (!stats()?.courseTypeBreakdown || stats()?.courseTypeBreakdown?.length === 0)">No course data yet.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Quick links -->
+<div class="row g-3 mb-4">
+  <div class="col-lg-6">
+    <div class="widget-card h-100">
+      <h6 class="widget-title"><i class="fa-solid fa-bolt me-2 text-warning"></i> Quick Actions</h6>
+      <div class="quick-actions d-flex flex-wrap gap-2">
+        <a routerLink="/admin/students" class="btn btn-outline-primary btn-sm"><i class="fa-solid fa-user-graduate me-1"></i> Manage Students</a>
+        <a routerLink="/admin/courses" class="btn btn-outline-info btn-sm"><i class="fa-solid fa-book me-1"></i> Manage Courses</a>
+        <a routerLink="/admin/jobs" class="btn btn-outline-success btn-sm"><i class="fa-solid fa-briefcase me-1"></i> Manage Jobs</a>
+        <a routerLink="/admin/volunteers" class="btn btn-outline-warning btn-sm"><i class="fa-solid fa-handshake-angle me-1"></i> Manage Volunteering</a>
+        <a routerLink="/admin/messages" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-envelope me-1"></i> View Messages</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activity Panel -->
+  <div class="col-lg-6">
+    <div class="widget-card h-100">
+      <h6 class="widget-title d-flex justify-content-between align-items-center">
+        <span><i class="fa-solid fa-clock-rotate-left me-2 text-primary"></i> Recent Activity</span>
+        <button class="btn btn-sm btn-link text-decoration-none">View All</button>
+      </h6>
+      
+      <div class="activity-feed mt-3">
+        <ng-container *ngIf="recentActivities().length > 0; else noActivities">
+          <div *ngFor="let notif of recentActivities(); let last = last" 
+               class="d-flex position-relative activity-item"
+               [class.mb-2]="!last"
+               (click)="openActivity(notif)"
+               style="cursor: pointer;">
+            <div class="flex-shrink-0">
+              <div class="rounded-circle d-flex align-items-center justify-content-center" 
+                   [ngClass]="getIconColorClass(notif.type)"
+                   style="width: 32px; height: 32px; font-size: 0.85rem;">
+                <i class="fa-solid" 
+                   [class.fa-book]="notif.type === 'CourseRegistration'"
+                   [class.fa-user-plus]="notif.type === 'VolunteerApplication'"
+                   [class.fa-file-signature]="notif.type === 'JobApplication'"
+                   [class.fa-envelope]="notif.type === 'Message'"
+                   [class.fa-bell]="!notif.type || (notif.type !== 'CourseRegistration' && notif.type !== 'VolunteerApplication' && notif.type !== 'JobApplication' && notif.type !== 'Message')">
+                </i>
+              </div>
+            </div>
+            <div class="ms-2 flex-grow-1" [class.border-bottom]="!last" [class.pb-2]="!last">
+              <h6 class="mb-0 text-dark" [class.fw-bold]="!notif.isRead" style="font-size: 0.85rem;">
+                <span *ngIf="!notif.isRead" class="badge bg-danger rounded-pill me-1" style="font-size: 0.55rem; padding: 2px 4px;">New</span>
+                {{ notif.title }}
+              </h6>
+              <p class="text-muted mb-0" style="font-size: 0.75rem;">{{ notif.message }}</p>
+              <span class="text-muted" style="font-size: 0.65rem;">{{ notif.createdAt | date:'short' }}</span>
+            </div>
+          </div>
+        </ng-container>
+        <ng-template #noActivities>
+          <div class="text-center text-muted py-4">
+            <i class="fa-regular fa-bell-slash fs-4 mb-2"></i>
+            <p class="mb-0">No recent activities.</p>
+          </div>
+        </ng-template>
+      </div>
+
+    </div>
+  </div>
+</div>

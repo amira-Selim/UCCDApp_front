@@ -1,0 +1,120 @@
+<div class="page-head mb-4 d-flex align-items-center justify-content-between flex-wrap gap-2">
+  <div>
+    <h3 class="fw-bold mb-1">Courses</h3>
+    <p class="text-muted mb-0">Create, edit and manage workshops, trainings and advising sessions.</p>
+  </div>
+  <button class="btn btn-main" (click)="openCreateForm()">
+    <i class="fa-solid fa-plus me-2"></i> New Course
+  </button>
+</div>
+
+<div class="card-panel">
+  <app-data-table
+    [data]="courses()"
+    [columns]="columns"
+    [loading]="loading()"
+    [error]="error()"
+    searchPlaceholder="Search by course name or type..."
+    emptyMessage="No courses found"
+    emptyIcon="fa-solid fa-book"
+    (rowClicked)="viewCourse($event)">
+    <ng-template #rowActions let-row>
+      <button class="btn btn-sm btn-outline-primary me-1 position-relative" (click)="viewCourse(row)" title="View Applicants">
+        <i class="fa-solid fa-users"></i>
+        <span *ngIf="row.pendingCount > 0" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
+          {{ row.pendingCount }}
+          <span class="visually-hidden">pending</span>
+        </span>
+      </button>
+      <button class="btn btn-sm btn-outline-primary me-1" (click)="openEditForm(row)" title="Edit">
+        <i class="fa-solid fa-pen"></i>
+      </button>
+      <button class="btn btn-sm btn-outline-danger" (click)="deleteCourse(row)" title="Delete">
+        <i class="fa-solid fa-trash"></i>
+      </button>
+    </ng-template>
+  </app-data-table>
+</div>
+
+<!-- Create / Edit modal -->
+<div class="detail-modal-backdrop" *ngIf="showForm()" (click)="closeForm()"></div>
+<div class="detail-modal" *ngIf="showForm()">
+  <div class="detail-header d-flex align-items-center justify-content-between">
+    <h5 class="mb-0">{{ editingCourse() ? 'Edit Course' : 'New Course' }}</h5>
+    <button class="btn-close" (click)="closeForm()"></button>
+  </div>
+
+  <form [formGroup]="courseForm" (ngSubmit)="submitForm()">
+    <div class="detail-body">
+      <p class="form-section-title">Course Details</p>
+
+      <div class="mb-3">
+        <label class="form-label">Course Name</label>
+        <input type="text" class="form-control" formControlName="name" [class.is-invalid]="isInvalid('name')" />
+        <div class="invalid-feedback invalid-feedback-block" *ngIf="isInvalid('name')">
+          Course name is required (min 2 characters).
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Type</label>
+        <select class="form-select" formControlName="type" [class.is-invalid]="isInvalid('type')">
+          <option *ngFor="let t of courseTypes" [value]="t">{{ t }}</option>
+        </select>
+      </div>
+
+
+      <div class="row g-3 mt-1">
+        <div class="col-sm-6">
+          <label class="form-label">Start Date</label>
+          <input type="date" class="form-control" formControlName="startDate" [class.is-invalid]="isInvalid('startDate')" />
+          <div class="invalid-feedback invalid-feedback-block" *ngIf="isInvalid('startDate')">
+            Start date is required.
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3 mt-1">
+        <div class="col-sm-6">
+          <label class="form-label">Duration (hours)</label>
+          <input type="number" min="1" class="form-control" formControlName="duration" [class.is-invalid]="isInvalid('duration')" />
+          <div class="invalid-feedback invalid-feedback-block" *ngIf="isInvalid('duration')">
+            Duration must be at least 1 hour.
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <label class="form-label">Capacity</label>
+          <input type="number" min="1" class="form-control" formControlName="capacity" [class.is-invalid]="isInvalid('capacity')" />
+          <div class="invalid-feedback invalid-feedback-block" *ngIf="isInvalid('capacity')">
+            Capacity must be at least 1.
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3 mt-1">
+        <div class="col-sm-6">
+          <label class="form-label">Price (EGP)</label>
+          <input type="number" min="0" class="form-control" formControlName="price" [class.is-invalid]="isInvalid('price')" />
+          <div class="invalid-feedback invalid-feedback-block" *ngIf="isInvalid('price')">
+            Price cannot be negative.
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <label class="form-label">Certification Fee (EGP)</label>
+          <input type="number" min="0" class="form-control" formControlName="certificationFee" [class.is-invalid]="isInvalid('certificationFee')" />
+          <div class="invalid-feedback invalid-feedback-block" *ngIf="isInvalid('certificationFee')">
+            Certification fee cannot be negative.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-footer d-flex justify-content-end gap-2">
+      <button type="button" class="btn btn-light" (click)="closeForm()">Cancel</button>
+      <button type="submit" class="btn btn-main" [disabled]="saving()">
+        <span class="spinner-border spinner-border-sm me-2" *ngIf="saving()"></span>
+        {{ editingCourse() ? 'Save Changes' : 'Create Course' }}
+      </button>
+    </div>
+  </form>
+</div>

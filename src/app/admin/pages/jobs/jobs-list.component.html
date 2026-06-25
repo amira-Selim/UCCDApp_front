@@ -1,0 +1,116 @@
+<div class="page-head mb-4 d-flex align-items-center justify-content-between flex-wrap gap-2">
+  <div>
+    <h3 class="fw-bold mb-1">Job Opportunities</h3>
+    <p class="text-muted mb-0">Post job opportunities and review applicants.</p>
+  </div>
+  <button class="btn btn-main" (click)="openCreateForm()">
+    <i class="fa-solid fa-plus me-2"></i> New Job
+  </button>
+</div>
+
+<div class="card-panel">
+  <app-data-table
+    [data]="jobs()"
+    [columns]="columns"
+    [loading]="loading()"
+    [error]="error()"
+    searchPlaceholder="Search by title, company or faculty..."
+    emptyMessage="No job opportunities found"
+    emptyIcon="fa-solid fa-briefcase">
+    <ng-template #rowActions let-row>
+      <button class="btn btn-sm btn-outline-primary position-relative" (click)="viewApplications(row)" title="View Applicants">
+        <i class="fa-solid fa-users"></i>
+        <span *ngIf="row.totalApplicants > 0" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
+          {{ row.totalApplicants }}
+          <span class="visually-hidden">applicants</span>
+        </span>
+      </button>
+    </ng-template>
+  </app-data-table>
+</div>
+
+<!-- Create job modal -->
+<div class="detail-modal-backdrop" *ngIf="showForm()" (click)="closeForm()"></div>
+<div class="detail-modal" *ngIf="showForm()">
+  <div class="detail-header d-flex align-items-center justify-content-between">
+    <h5 class="mb-0">New Job Opportunity</h5>
+    <button class="btn-close" (click)="closeForm()"></button>
+  </div>
+
+  <form [formGroup]="jobForm" (ngSubmit)="submitForm()">
+    <div class="detail-body">
+      <div class="mb-3">
+        <label class="form-label">Job Title</label>
+        <input type="text" class="form-control" formControlName="title" [class.is-invalid]="isInvalid('title')" />
+        <div class="invalid-feedback invalid-feedback-block" *ngIf="isInvalid('title')">Job title is required.</div>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-sm-6">
+          <label class="form-label">Company Name</label>
+          <input type="text" class="form-control" formControlName="companyName" [class.is-invalid]="isInvalid('companyName')" />
+          <div class="invalid-feedback invalid-feedback-block" *ngIf="isInvalid('companyName')">Company name is required.</div>
+        </div>
+        <div class="col-sm-6">
+          <label class="form-label">Company Email</label>
+          <input type="email" class="form-control" formControlName="companyEmail" [class.is-invalid]="isInvalid('companyEmail')" />
+          <div class="invalid-feedback invalid-feedback-block" *ngIf="isInvalid('companyEmail')">A valid email is required.</div>
+        </div>
+      </div>
+
+      <div class="mb-3 mt-3">
+        <label class="form-label">Description</label>
+        <textarea class="form-control" rows="3" formControlName="description" [class.is-invalid]="isInvalid('description')"></textarea>
+        <div class="invalid-feedback invalid-feedback-block" *ngIf="isInvalid('description')">Description must be at least 10 characters.</div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Requirements</label>
+        <textarea class="form-control" rows="2" formControlName="requirements" [class.is-invalid]="isInvalid('requirements')"></textarea>
+        <div class="invalid-feedback invalid-feedback-block" *ngIf="isInvalid('requirements')">Requirements are required.</div>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-sm-4">
+          <label class="form-label">Location</label>
+          <input type="text" class="form-control" formControlName="location" [class.is-invalid]="isInvalid('location')" />
+          <div class="invalid-feedback invalid-feedback-block" *ngIf="isInvalid('location')">Location is required.</div>
+        </div>
+        <div class="col-sm-4">
+          <label class="form-label">Type</label>
+          <select class="form-select" formControlName="type" [class.is-invalid]="isInvalid('type')">
+            <option value="" disabled selected>Select type</option>
+            <option *ngFor="let t of jobTypes" [value]="t">{{ t }}</option>
+          </select>
+          <div class="invalid-feedback invalid-feedback-block" *ngIf="isInvalid('type')">Type is required.</div>
+        </div>
+        <div class="col-sm-4">
+          <label class="form-label">Salary Range (optional)</label>
+          <input type="number" min="0" class="form-control" formControlName="salaryRange" />
+        </div>
+      </div>
+
+      <div class="row g-3 mt-1">
+        <div class="col-sm-6">
+          <label class="form-label">Target Faculty</label>
+          <input type="text" class="form-control" formControlName="targetFaculty" [class.is-invalid]="isInvalid('targetFaculty')" placeholder="e.g. Computer Science" />
+          <div class="invalid-feedback invalid-feedback-block" *ngIf="isInvalid('targetFaculty')">Target faculty is required.</div>
+        </div>
+        <div class="col-sm-6">
+          <label class="form-label">Application Deadline</label>
+          <input type="date" class="form-control" formControlName="deadline" [class.is-invalid]="isInvalid('deadline')" />
+          <div class="invalid-feedback invalid-feedback-block" *ngIf="isInvalid('deadline')">Deadline is required.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-footer d-flex justify-content-end gap-2">
+      <button type="button" class="btn btn-light" (click)="closeForm()">Cancel</button>
+      <button type="submit" class="btn btn-main" [disabled]="saving()">
+        <span class="spinner-border spinner-border-sm me-2" *ngIf="saving()"></span>
+        Create Job
+      </button>
+    </div>
+  </form>
+</div>
+

@@ -1,0 +1,35 @@
+<div class="container my-5 min-vh-50">
+  <h2 class="text-main fw-bold mb-4">{{ 'wishlist.title' | translate }}</h2>
+
+  @if (isLoading) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-main" role="status"></div>
+    </div>
+  } @else {
+    <div class="row g-4">
+      @for (item of wishItems; track item.courseId) {
+        <div class="col-md-4">
+          <div class="card h-100 shadow-sm border-0">
+            <div class="card-body">
+              <h5 class="card-title fw-bold">{{ item.courseName }}</h5>
+
+              <div class="d-flex justify-content-between align-items-center mt-3">
+                <span class="text-primary fs-5 fw-bold">{{ item.price }} EGP</span>
+
+                <button class="btn btn-sm btn-outline-danger" title="Remove from Wishlist" (click)="remove(item.courseId, item.courseName)">
+                  <i class="fa-solid fa-heart"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      } @empty {
+        <div class="col-12 text-center py-5">
+          <i class="fa-regular fa-heart fs-1 text-muted opacity-25 mb-3 d-block"></i>
+          <p class="text-muted mb-3">{{ 'wishlist.empty' | translate }}</p>
+          <a routerLink="/courses" class="btn btn-main rounded-pill px-4">{{ 'wishlist.browseCourses' | translate }}</a>
+        </div>
+      }
+    </div>
+  }
+</div>

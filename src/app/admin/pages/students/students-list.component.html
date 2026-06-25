@@ -1,0 +1,212 @@
+<div class="page-head mb-4 d-flex align-items-center justify-content-between flex-wrap gap-2">
+  <div>
+    <h3 class="fw-bold mb-1">Students</h3>
+    <p class="text-muted mb-0">All registered students and their profile data.</p>
+  </div>
+  <button class="btn btn-outline-secondary btn-sm" (click)="loadStudents()">
+    <i class="fa-solid fa-rotate-right me-1"></i> Refresh
+  </button>
+</div>
+
+<div class="card-panel">
+  <app-data-table
+    [data]="students()"
+    [columns]="columns"
+    [loading]="loading()"
+    [error]="error()"
+    searchPlaceholder="Search by name, email or faculty..."
+    emptyMessage="No students found"
+    emptyIcon="fa-solid fa-user-graduate"
+    (rowClicked)="viewStudent($event)">
+    <ng-template #rowActions let-row>
+      <button class="btn btn-sm btn-outline-primary" (click)="viewStudent(row)">
+        <i class="fa-solid fa-eye"></i>
+      </button>
+    </ng-template>
+  </app-data-table>
+</div>
+
+<!-- Detail modal -->
+<div class="detail-modal-backdrop" *ngIf="selectedStudent()" (click)="closeDetail()"></div>
+<div class="detail-modal student-detail-modal" *ngIf="selectedStudent() as s">
+  <div class="detail-header d-flex align-items-center justify-content-between">
+    <h5 class="mb-0">{{ s.fullName }}</h5>
+    <button class="btn-close" (click)="closeDetail()"></button>
+  </div>
+  <div class="detail-body">
+    <div class="detail-row"><span class="detail-label">Email</span><span>{{ s.email }}</span></div>
+    <div class="detail-row"><span class="detail-label">Phone</span><span>{{ s.phone || '—' }}</span></div>
+    <div class="detail-row"><span class="detail-label">Gender</span><span>{{ s.gender || '—' }}</span></div>
+    <div class="detail-row"><span class="detail-label">Faculty</span><span>{{ s.faculty || '—' }}</span></div>
+    <div class="detail-row"><span class="detail-label">Graduation Year</span><span>{{ s.graduationYear || '—' }}</span></div>
+    <div class="detail-row"><span class="detail-label">National ID</span><span>{{ s.nationalID || '—' }}</span></div>
+    <div class="detail-row"><span class="detail-label">Education</span><span>{{ s.education || '—' }}</span></div>
+    <div class="detail-row"><span class="detail-label">Skills</span><span>{{ s.skills || '—' }}</span></div>
+    <div class="detail-row"><span class="detail-label">Interests</span><span>{{ s.interests || '—' }}</span></div>
+    <div class="detail-row"><span class="detail-label">Career Goal</span><span>{{ s.careerGoal || '—' }}</span></div>
+    <div class="detail-row"><span class="detail-label">Enrolled Courses</span><span>{{ s.enrolledCoursesCount }}</span></div>
+
+    <!-- Tabs Navigation -->
+    <ul class="nav nav-tabs mt-4 mb-3">
+      <li class="nav-item">
+        <button class="nav-link" [class.active]="activeTab() === 'courses'" (click)="switchTab('courses')">Courses</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" [class.active]="activeTab() === 'jobs'" (click)="switchTab('jobs')">Job Applications</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" [class.active]="activeTab() === 'volunteers'" (click)="switchTab('volunteers')">Volunteer Applications</button>
+      </li>
+    </ul>
+
+    <div class="tab-content">
+      <!-- Courses Tab -->
+      <div *ngIf="activeTab() === 'courses'">
+        <div class="text-center py-4" *ngIf="registeredCoursesLoading()">
+          <div class="spinner-border spinner-border-sm text-main" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="text-muted small mt-2 mb-0">Loading registered courses...</p>
+        </div>
+
+        <div class="text-center py-3" *ngIf="!registeredCoursesLoading() && registeredCoursesError()">
+          <p class="text-danger small mb-0">{{ registeredCoursesError() }}</p>
+        </div>
+
+        <app-empty-state
+          *ngIf="!registeredCoursesLoading() && !registeredCoursesError() && registeredCourses().length === 0"
+          icon="fa-solid fa-book"
+          message="This student is not enrolled in any courses">
+        </app-empty-state>
+
+        <div class="table-responsive" *ngIf="!registeredCoursesLoading() && !registeredCoursesError() && registeredCourses().length > 0">
+          <table class="table table-hover align-middle registered-table">
+            <thead>
+              <tr>
+                <th>Course Name</th>
+                <th>Start Date</th>
+                <th>Status</th>
+                <th class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let rc of registeredCourses()">
+                <td class="fw-semibold">{{ rc.courseName }}</td>
+                <td>{{ rc.startDate ? (rc.startDate | date:'mediumDate') : '—' }}</td>
+                <td><app-status-badge [status]="statusLabel(rc.status)"></app-status-badge></td>
+                <td class="text-end">
+                  <button
+                    *ngIf="canApprove(rc.status)"
+                    class="btn btn-sm btn-success me-1"
+                    [disabled]="updatingCourseId() === rc.courseId"
+                    title="Approve"
+                    (click)="approve(rc)">
+                    <i class="fa-solid fa-check"></i>
+                  </button>
+                  <button
+                    *ngIf="canReject(rc.status)"
+                    class="btn btn-sm btn-outline-danger me-1"
+                    [disabled]="updatingCourseId() === rc.courseId"
+                    title="Reject"
+                    (click)="reject(rc)">
+                    <i class="fa-solid fa-xmark"></i>
+                  </button>
+                  <button
+                    *ngIf="canComplete(rc.status)"
+                    class="btn btn-sm btn-outline-primary"
+                    [disabled]="updatingCourseId() === rc.courseId"
+                    title="Mark Completed"
+                    (click)="markCompleted(rc)">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                  </button>
+                  <span class="text-muted small" *ngIf="!hasAnyAction(rc.status)">—</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Jobs Tab -->
+      <div *ngIf="activeTab() === 'jobs'">
+        <div class="text-center py-4" *ngIf="studentJobsLoading()">
+          <div class="spinner-border spinner-border-sm text-main" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="text-muted small mt-2 mb-0">Loading job applications...</p>
+        </div>
+
+        <div class="text-center py-3" *ngIf="!studentJobsLoading() && studentJobsError()">
+          <p class="text-danger small mb-0">{{ studentJobsError() }}</p>
+        </div>
+
+        <app-empty-state
+          *ngIf="!studentJobsLoading() && !studentJobsError() && studentJobsLoaded() && studentJobs().length === 0"
+          icon="fa-solid fa-briefcase"
+          message="No job applications found for this student.">
+        </app-empty-state>
+
+        <div class="table-responsive" *ngIf="!studentJobsLoading() && !studentJobsError() && studentJobs().length > 0">
+          <table class="table table-hover align-middle registered-table">
+            <thead>
+              <tr>
+                <th>Job Title</th>
+                <th>Company</th>
+                <th>Applied At</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let job of studentJobs()">
+                <td class="fw-semibold">{{ job.jobTitle }}</td>
+                <td>{{ job.companyName }}</td>
+                <td>{{ job.appliedAt | date:'mediumDate' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Volunteers Tab -->
+      <div *ngIf="activeTab() === 'volunteers'">
+        <div class="text-center py-4" *ngIf="studentVolunteersLoading()">
+          <div class="spinner-border spinner-border-sm text-main" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="text-muted small mt-2 mb-0">Loading volunteer applications...</p>
+        </div>
+
+        <div class="text-center py-3" *ngIf="!studentVolunteersLoading() && studentVolunteersError()">
+          <p class="text-danger small mb-0">{{ studentVolunteersError() }}</p>
+        </div>
+
+        <app-empty-state
+          *ngIf="!studentVolunteersLoading() && !studentVolunteersError() && studentVolunteersLoaded() && studentVolunteers().length === 0"
+          icon="fa-solid fa-hand-holding-heart"
+          message="No volunteer applications found for this student.">
+        </app-empty-state>
+
+        <div class="table-responsive" *ngIf="!studentVolunteersLoading() && !studentVolunteersError() && studentVolunteers().length > 0">
+          <table class="table table-hover align-middle registered-table">
+            <thead>
+              <tr>
+                <th>Opportunity</th>
+                <th>Applied At</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let vol of studentVolunteers()">
+                <td class="fw-semibold">{{ vol.opportunityTitle }}</td>
+                <td>{{ vol.appliedAt | date:'mediumDate' }}</td>
+                <td><app-status-badge [status]="vol.status"></app-status-badge></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="detail-footer text-end">
+    <button class="btn btn-light" (click)="closeDetail()">Close</button>
+  </div>
+</div>

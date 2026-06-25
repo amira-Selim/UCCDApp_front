@@ -1,0 +1,11 @@
+<div class="stat-card" [ngClass]="'accent-' + colorClass">
+  <div class="stat-icon">
+    <i [class]="icon"></i>
+  </div>
+  <div class="stat-body">
+    <p class="stat-label">{{ label }}</p>
+    <h3 class="stat-value" *ngIf="!loading">{{ value }}</h3>
+    <div class="stat-skeleton" *ngIf="loading"></div>
+    <span class="stat-trend" *ngIf="trend">{{ trend }}</span>
+  </div>
+</div>

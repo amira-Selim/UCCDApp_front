@@ -1,0 +1,71 @@
+/* Hero Carousel */
+.hero-carousel-wrapper {
+  .hero-slide {
+    height: 85vh;
+    min-height: 600px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.4));
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+  }
+}
+
+/* Director Section */
+.director-section {
+  .img-backdrop {
+    width: 90%;
+    height: 90%;
+    top: 5%;
+    left: -5%;
+    z-index: 1;
+  }
+}
+
+/* Services Grid */
+.service-card {
+  .service-overlay {
+    backdrop-filter: blur(2px);
+  }
+  &:hover .service-overlay {
+    opacity: 1 !important;
+  }
+  img {
+    transition: transform 0.5s ease;
+  }
+  &:hover img {
+    transform: scale(1.05);
+  }
+}
+
+/* Utilities */
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  &:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-lg);
+  }
+}
+
+.transform-scale {
+  transform: scale(1.05);
+  @media (max-width: 768px) {
+    transform: scale(1);
+  }
+}

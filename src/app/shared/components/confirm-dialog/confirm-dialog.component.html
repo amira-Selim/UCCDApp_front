@@ -1,0 +1,19 @@
+<div class="confirm-backdrop" *ngIf="dialog.state().visible" (click)="cancel()"></div>
+
+<div class="confirm-modal" *ngIf="dialog.state().visible" role="dialog" aria-modal="true">
+  <div class="confirm-modal-header">
+    <h5 class="mb-0">{{ dialog.state().title }}</h5>
+  </div>
+  <div class="confirm-modal-body">
+    <p class="mb-0">{{ dialog.state().message }}</p>
+  </div>
+  <div class="confirm-modal-footer">
+    <button type="button" class="btn btn-light" (click)="cancel()">{{ dialog.state().cancelText }}</button>
+    <button type="button"
+            class="btn"
+            [ngClass]="dialog.state().variant === 'danger' ? 'btn-danger' : 'btn-main'"
+            (click)="confirm()">
+      {{ dialog.state().confirmText }}
+    </button>
+  </div>
+</div>

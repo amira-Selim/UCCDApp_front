@@ -1,0 +1,43 @@
+.jobs-section {
+  .search-box {
+    input:focus {
+      outline: none;
+      box-shadow: none;
+    }
+  }
+
+  .filter-btn {
+    transition: all 0.3s ease;
+    background-color: transparent;
+    
+    &:hover, &.active {
+      background-color: var(--main-light);
+      color: var(--main-color) !important;
+      font-weight: 600;
+      
+      i {
+        transform: translateX(4px);
+        color: var(--main-color);
+      }
+    }
+  }
+
+  .job-card {
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  }
+
+  .hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-md) !important;
+    }
+  }
+}
+
+.modal-content {
+  .modal-body {
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+}

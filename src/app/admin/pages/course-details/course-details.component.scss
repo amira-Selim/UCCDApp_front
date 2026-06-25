@@ -1,0 +1,39 @@
+:host {
+  display: block;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.info-label {
+  color: #667085;
+  font-weight: 500;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.info-value {
+  color: #1d2939;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.enrolled-table {
+  th {
+    color: #667085;
+    font-weight: 600;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    border-bottom-width: 1px;
+  }
+
+  td {
+    font-size: 0.92rem;
+    vertical-align: middle;
+  }
+}

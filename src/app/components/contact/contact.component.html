@@ -1,0 +1,153 @@
+<section class="contact-section min-vh-100 bg-light py-5 d-flex align-items-center">
+  <div class="container">
+    
+    <div class="premium-card border-0 shadow-lg overflow-hidden">
+      <div class="row g-0">
+        
+        <!-- Contact Info Side -->
+        <div class="col-lg-5 text-white p-5 d-flex flex-column justify-content-between position-relative" style="background: linear-gradient(135deg, #003366 0%, #00509d 100%);">
+          <!-- Abstract Background Pattern -->
+          <div class="position-absolute top-0 start-0 w-100 h-100 opacity-25" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E'); z-index: 0;"></div>
+          
+          <div class="position-relative z-1">
+            <h2 class="display-6 fw-bold font-heading mb-3">Get in Touch</h2>
+            <p class="lead opacity-75 mb-5">We'd love to hear from you. Our friendly team is always here to chat.</p>
+            
+            <div class="d-flex align-items-center gap-4 mb-4">
+              <div class="bg-white bg-opacity-10 p-3 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                <i class="fa-regular fa-envelope fs-5"></i>
+              </div>
+              <div>
+                <h6 class="fw-bold mb-1">Chat with us</h6>
+                <p class="mb-0 opacity-75 small">info&#64;uccd.edu.eg</p>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-4 mb-4">
+              <div class="bg-white bg-opacity-10 p-3 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                <i class="fa-solid fa-location-dot fs-5"></i>
+              </div>
+              <div>
+                <h6 class="fw-bold mb-1">Visit us</h6>
+                <p class="mb-0 opacity-75 small">Main University Campus<br>Building C, First Floor</p>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-4">
+              <div class="bg-white bg-opacity-10 p-3 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                <i class="fa-solid fa-phone fs-5"></i>
+              </div>
+              <div>
+                <h6 class="fw-bold mb-1">Call us</h6>
+                <p class="mb-0 opacity-75 small">Mon-Fri from 8am to 5pm<br>+20 123 456 7890</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="position-relative z-1 mt-5 pt-5">
+            <div class="d-flex gap-3">
+              <a href="#" class="text-white bg-white bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center transition-normal hover-lift" style="width: 40px; height: 40px;"><i class="fa-brands fa-facebook-f"></i></a>
+              <a href="#" class="text-white bg-white bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center transition-normal hover-lift" style="width: 40px; height: 40px;"><i class="fa-brands fa-twitter"></i></a>
+              <a href="#" class="text-white bg-white bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center transition-normal hover-lift" style="width: 40px; height: 40px;"><i class="fa-brands fa-linkedin-in"></i></a>
+              <a href="#" class="text-white bg-white bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center transition-normal hover-lift" style="width: 40px; height: 40px;"><i class="fa-brands fa-instagram"></i></a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Side -->
+        <div class="col-lg-7 bg-white p-5">
+          <form class="contact-form h-100 d-flex flex-column" [formGroup]="contactForm" (ngSubmit)="submit()">
+            
+            <h4 class="fw-bold font-heading mb-4 text-dark">{{ 'contact.title' | translate }}</h4>
+
+            <div class="row g-4 mb-4">
+              <div class="col-md-6">
+                <label class="form-label fw-medium small text-muted">{{ 'contact.name' | translate }}</label>
+                <input type="text" class="form-control form-control-lg bg-light border-0" formControlName="name" placeholder="John Doe" />
+                @if (contactForm.get('name')?.errors && (contactForm.get('name')?.touched || contactForm.get('name')?.dirty)) {
+                  <div class="text-danger small mt-1">
+                    @if (contactForm.get('name')?.getError('required')) { <span>* Name is required</span> }
+                    @else if (contactForm.get('name')?.getError('minlength')) { <span>* Name should be at least 3 chars</span> }
+                  </div>
+                }
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label fw-medium small text-muted">{{ 'contact.email' | translate }}</label>
+                <input type="email" class="form-control form-control-lg bg-light border-0" formControlName="email" placeholder="you@company.com" />
+                @if (contactForm.get('email')?.errors && (contactForm.get('email')?.touched || contactForm.get('email')?.dirty)) {
+                  <div class="text-danger small mt-1">
+                    @if (contactForm.get('email')?.getError('required')) { <span>* Email is required</span> }
+                    @else if (contactForm.get('email')?.getError('email')) { <span>* Invalid email</span> }
+                  </div>
+                }
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label fw-medium small text-muted d-block mb-3">What can we help you with?</label>
+              <div class="row g-3">
+                <div class="col-sm-6">
+                  <div class="form-check custom-radio position-relative border rounded-3 p-3 transition-normal bg-light" [class.border-main]="contactForm.get('issue')?.value === 'General inquiry'">
+                    <input class="form-check-input ms-0 me-2" type="radio" formControlName="issue" value="General inquiry" id="issue1">
+                    <label class="form-check-label text-dark fw-medium stretched-link" for="issue1">General inquiry</label>
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <div class="form-check custom-radio position-relative border rounded-3 p-3 transition-normal bg-light" [class.border-main]="contactForm.get('issue')?.value === 'Course Information'">
+                    <input class="form-check-input ms-0 me-2" type="radio" formControlName="issue" value="Course Information" id="issue2">
+                    <label class="form-check-label text-dark fw-medium stretched-link" for="issue2">Course Information</label>
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <div class="form-check custom-radio position-relative border rounded-3 p-3 transition-normal bg-light" [class.border-main]="contactForm.get('issue')?.value === 'Career Advising'">
+                    <input class="form-check-input ms-0 me-2" type="radio" formControlName="issue" value="Career Advising" id="issue3">
+                    <label class="form-check-label text-dark fw-medium stretched-link" for="issue3">Career Advising</label>
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <div class="form-check custom-radio position-relative border rounded-3 p-3 transition-normal bg-light" [class.border-main]="contactForm.get('issue')?.value === 'Other'">
+                    <input class="form-check-input ms-0 me-2" type="radio" formControlName="issue" value="Other" id="issue4">
+                    <label class="form-check-label text-dark fw-medium stretched-link" for="issue4">Other</label>
+                  </div>
+                </div>
+              </div>
+              @if (contactForm.get('issue')?.errors && contactForm.get('issue')?.touched) {
+                <div class="text-danger small mt-2">
+                  <span>* Please select a topic</span>
+                </div>
+              }
+            </div>
+
+            <div class="mb-4 flex-grow-1">
+              <label class="form-label fw-medium small text-muted">{{ 'contact.message' | translate }}</label>
+              <textarea rows="4" class="form-control form-control-lg bg-light border-0 h-100" formControlName="message" placeholder="Leave us a message..."></textarea>
+              @if (contactForm.get('message')?.errors && (contactForm.get('message')?.touched || contactForm.get('message')?.dirty)) {
+                <div class="text-danger small mt-1">
+                  @if (contactForm.get('message')?.getError('required')) { <span>* Message is required</span> }
+                  @else if (contactForm.get('message')?.getError('minlength')) { <span>* Message must be at least 10 chars</span> }
+                </div>
+              }
+            </div>
+
+            <div class="mt-auto pt-4">
+              <button type="submit" class="btn btn-main btn-lg w-100 py-3 rounded-pill fw-bold shadow-sm" [disabled]="isLoading">
+                @if (isLoading) {
+                  <i class="fas fa-spin fa-spinner me-2"></i> Sending...
+                } @else {
+                  {{ 'contact.send' | translate }}
+                }
+              </button>
+
+              @if (msgError) { <div class="alert alert-danger mt-3 mb-0 rounded-3 border-0 bg-danger bg-opacity-10 text-danger"><i class="fa-solid fa-triangle-exclamation me-2"></i>{{ msgError }}</div> }
+              @if (msgSuccess) { <div class="alert alert-success mt-3 mb-0 rounded-3 border-0 bg-success bg-opacity-10 text-success"><i class="fa-regular fa-circle-check me-2"></i>{{ msgSuccess }}</div> }
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>

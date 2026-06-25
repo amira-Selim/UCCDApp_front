@@ -1,0 +1,106 @@
+<div class="admin-shell" [class.sidebar-collapsed]="sidebarCollapsed()">
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar" [class.mobile-open]="mobileSidebarOpen()">
+    <div class="sidebar-brand">
+      <img src="assets/images/logo UCCD.jpg" alt="UCCD" class="brand-logo" />
+      <span class="brand-text" *ngIf="!sidebarCollapsed()">UCCD Admin</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a *ngFor="let item of navItems"
+         [routerLink]="item.link"
+         routerLinkActive="active"
+         class="sidebar-link"
+         (click)="closeMobileSidebar()">
+        <i [class]="item.icon"></i>
+        <span *ngIf="!sidebarCollapsed()">{{ item.label | translate }}</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a routerLink="/home" class="sidebar-link">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span *ngIf="!sidebarCollapsed()">Back to site</span>
+      </a>
+    </div>
+  </aside>
+
+  <div class="mobile-backdrop" *ngIf="mobileSidebarOpen()" (click)="closeMobileSidebar()"></div>
+
+  <!-- Main column -->
+  <div class="admin-main">
+    <header class="admin-topbar">
+      <button class="icon-btn d-none d-lg-inline-flex" (click)="toggleSidebar()" aria-label="Toggle sidebar">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <button class="icon-btn d-lg-none" (click)="toggleMobileSidebar()" aria-label="Open menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+
+      <h5 class="topbar-title mb-0 d-none d-sm-block">Admin Dashboard</h5>
+
+      <div class="d-flex align-items-center gap-3 ms-auto">
+        
+        <!-- Notifications Dropdown -->
+        <div class="dropdown">
+          <button class="icon-btn position-relative" data-bs-toggle="dropdown" aria-expanded="false" style="background: none; border: none;">
+            <i class="fa-regular fa-bell fs-5 text-dark"></i>
+            <span class="position-absolute top-25 start-75 translate-middle p-1 bg-danger border border-light rounded-circle" *ngIf="unreadCount > 0">
+              <span class="visually-hidden">New alerts</span>
+            </span>
+          </button>
+          <div class="dropdown-menu dropdown-menu-end border-0 shadow-lg rounded-3 mt-2 p-0" style="width: 320px;">
+            <div class="d-flex justify-content-between align-items-center p-3 border-bottom bg-light rounded-top-3">
+              <h6 class="mb-0 fw-bold">{{ 'admin.notifications' | translate }}</h6>
+              <span class="badge bg-main rounded-pill">{{ unreadCount }} New</span>
+            </div>
+            <div class="notification-list overflow-auto" style="max-height: 300px;">
+              <ng-container *ngIf="notifications.length > 0; else noNotifs">
+                <a *ngFor="let notif of notifications" href="#" (click)="$event.preventDefault(); openNotification(notif)" class="dropdown-item p-3 border-bottom text-wrap" [class.bg-main-light]="!notif.isRead">
+                  <div class="d-flex gap-2">
+                    <div class="mt-1 text-main"><i class="fa-solid fa-circle-info"></i></div>
+                    <div>
+                      <p class="mb-1 small fw-medium">{{ notif.message }}</p>
+                      <small class="text-muted" style="font-size: 0.75rem;">{{ notif.createdAt | date:'short' }}</small>
+                    </div>
+                  </div>
+                </a>
+              </ng-container>
+              <ng-template #noNotifs>
+                <div class="p-4 text-center text-muted">
+                  <i class="fa-regular fa-bell-slash fs-3 mb-2 opacity-50"></i>
+                  <p class="mb-0 small">{{ 'nav.noNotifications' | translate }}</p>
+                </div>
+              </ng-template>
+            </div>
+            <div class="p-2 text-center border-top">
+              <a href="#" (click)="$event.preventDefault(); markAllAsRead()" class="small text-main text-decoration-none fw-medium">{{ 'nav.markAllRead' | translate }}</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="topbar-user dropdown">
+          <button class="user-pill" data-bs-toggle="dropdown" aria-expanded="false">
+            <span class="avatar"><i class="fa-solid fa-user-shield"></i></span>
+            <span class="user-name d-none d-md-inline">{{ auth.currentUser()?.fullName || 'Admin' }}</span>
+            <i class="fa-solid fa-chevron-down small"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><span class="dropdown-item-text text-muted small">{{ auth.currentUser()?.email }}</span></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" routerLink="/home"><i class="fa-solid fa-house me-2"></i>{{ 'admin.visitSite' | translate }}</a></li>
+            <li><button class="dropdown-item text-danger" (click)="logout()"><i class="fa-solid fa-right-from-bracket me-2"></i>{{ 'admin.logout' | translate }}</button></li>
+          </ul>
+        </div>
+      </div>
+    </header>
+
+    <main class="admin-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>
+
+<app-toast-container></app-toast-container>
+<app-confirm-dialog></app-confirm-dialog>

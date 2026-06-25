@@ -1,0 +1,122 @@
+<div class="profile-container container mt-5">
+  <div class="card shadow-lg border-0 rounded-4 mx-auto" style="max-width: 600px;">
+    <div class="card-body p-4 p-md-5">
+      <h2 class="text-center mb-4 fw-bold text-main">Complete Student Profile</h2>
+      
+      @if (msgError) {
+        <div class="alert alert-danger d-flex align-items-center rounded-3">
+          <div>{{ msgError }}</div>
+        </div>
+      }
+
+      <form [formGroup]="profileForm" (ngSubmit)="profileSubmit()">
+        
+        <!-- <div class="form-floating mb-3">
+          <input type="email" id="email" class="form-control" formControlName="email" placeholder="Email Address">
+          <label for="email">Email Address</label> -->
+          
+          <!-- @if (profileForm.get('email')?.touched) {
+            <div class="text-danger font-sm mt-1">
+              @if (profileForm.get('email')?.errors?.['required']) {
+                <span>Email is required.</span>
+              }
+              @if (profileForm.get('email')?.errors?.['email']) {
+                <span>Invalid email format.</span>
+              }
+            </div>
+          }
+        </div> -->
+
+        <!-- <div class="form-floating mb-3">
+          <input type="tel" id="phoneNumber" class="form-control" formControlName="phoneNumber" placeholder="Phone Number">
+          <label for="phoneNumber">Phone Number</label>
+          
+          @if (profileForm.get('phoneNumber')?.touched) {
+            <div class="text-danger font-sm mt-1">
+              @if (profileForm.get('phoneNumber')?.errors?.['required']) {
+                <span>Phone number is required.</span>
+              }
+              @if (profileForm.get('phoneNumber')?.errors?.['pattern']) {
+                <span>Must be a valid Egyptian phone number.</span>
+              }
+            </div>
+          }
+        </div> -->
+
+        <div class="form-floating mb-3">
+          <input type="text" id="NationalID" class="form-control" formControlName="NationalID" maxlength="14" placeholder="National ID">
+          <label for="NationalID">National ID</label>
+          
+          @if (profileForm.get('NationalID')?.touched) {
+            <div class="text-danger font-sm mt-1">
+              @if (profileForm.get('NationalID')?.errors?.['required']) {
+                <span>National ID is required.</span>
+              }
+              @if (profileForm.get('NationalID')?.errors?.['pattern']) {
+                <span>National ID must be exactly 14 digits.</span>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="form-floating mb-3">
+          <input type="text" id="Faculty" class="form-control" formControlName="Faculty" placeholder="Faculty">
+          <label for="Faculty">Faculty</label>
+          
+          @if (profileForm.get('Faculty')?.touched) {
+            <div class="text-danger font-sm mt-1">
+              @if (profileForm.get('Faculty')?.errors?.['required']) {
+                <span>Faculty name is required.</span>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="form-floating mb-3">
+          <input type="number" id="GraduationYear" class="form-control" formControlName="GraduationYear" placeholder="Graduation Year">
+          <label for="GraduationYear">Graduation Year</label>
+          
+          @if (profileForm.get('GraduationYear')?.touched) {
+            <div class="text-danger font-sm mt-1">
+              @if (profileForm.get('GraduationYear')?.errors?.['required']) {
+                <span>Graduation year is required.</span>
+              }
+              @if (profileForm.get('GraduationYear')?.errors?.['min'] || profileForm.get('GraduationYear')?.errors?.['max']) {
+                <span>Please enter a valid graduation year.</span>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="form-floating mb-4">
+          <select id="Gender" class="form-select" formControlName="Gender">
+            <option [ngValue]="null" disabled selected>Select Gender...</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+          <label for="Gender">Gender</label>
+          
+          @if (profileForm.get('Gender')?.touched) {
+            <div class="text-danger font-sm mt-1">
+              @if (profileForm.get('Gender')?.errors?.['required']) {
+                <span>Please select a Gender.</span>
+              }
+            </div>
+          }
+        </div>
+
+        <button type="submit" class="btn-main w-100 rounded-pill mt-3 shadow-sm" [disabled]="isLoading">
+          @if (!isLoading) {
+            <span>Save & Complete Registration</span>
+          } @else {
+            <span>
+              <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              Saving...
+            </span>
+          }
+        </button>
+
+      </form>
+    </div>
+  </div>
+</div>

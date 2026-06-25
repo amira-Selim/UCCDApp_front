@@ -1,0 +1,175 @@
+<section class="jobs-section min-vh-100 bg-light py-5">
+  <!-- Header -->
+  <div class="container mb-5 text-center">
+    <h1 class="display-5 fw-bold text-dark font-heading mb-3">Job Opportunities</h1>
+    <p class="text-muted lead mx-auto" style="max-width: 600px;">Connect with top employers and find the perfect role to advance your career.</p>
+  </div>
+
+  <div class="container">
+    <div class="row g-4">
+      
+      <!-- Filters Sidebar -->
+      <div class="col-lg-3">
+        <div class="premium-card p-4 border-0 sticky-top" style="top: 100px;">
+          
+          <div class="mb-4">
+            <h6 class="fw-bold mb-3 font-heading text-dark">Search</h6>
+            <div class="input-group input-group-sm mb-3 shadow-sm rounded-3 overflow-hidden">
+              <span class="input-group-text bg-white border-0 text-muted"><i class="fa-solid fa-search"></i></span>
+              <input type="text" class="form-control border-0 shadow-none ps-0" placeholder="Job title, company..." [(ngModel)]="searchTerm" (input)="applyFilters()" (keyup.enter)="applyFilters()">
+            </div>
+          </div>
+
+          <h6 class="fw-bold mb-3 font-heading text-dark border-top pt-4">Job Type</h6>
+          <ul class="list-unstyled mb-0">
+            <li class="mb-2" *ngFor="let type of jobTypes">
+              <button class="btn w-100 text-start px-3 py-2 border-0 rounded-3 text-muted fw-medium filter-btn" 
+                      [class.active]="selectedType === type"
+                      (click)="setType(type)">
+                <i class="fa-solid fa-angle-right me-2 small transition-normal"></i> {{ type }}
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Jobs List -->
+      <div class="col-lg-9">
+        <div class="row g-4">
+          @for (job of filteredJobs; track job.id) {
+            <div class="col-12">
+              <div class="premium-card p-4 border-0 job-card transition-normal hover-lift">
+                <div class="row align-items-center">
+                  
+                  <div class="col-md-8">
+                    <div class="d-flex align-items-center gap-4 mb-3 mb-md-0">
+                      <div class="company-logo bg-light text-main rounded-circle d-flex align-items-center justify-content-center fw-bold fs-3 shadow-sm flex-shrink-0" style="width: 70px; height: 70px;">
+                        {{ job.companyName.charAt(0).toUpperCase() }}
+                      </div>
+                      <div>
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                          <h5 class="fw-bold font-heading mb-0 text-dark">{{ job.title }}</h5>
+                          <span class="badge bg-main-light text-main rounded-pill">{{ job.type }}</span>
+                          <span *ngIf="!auth.isAdmin() && appliedJobIds.has(job.id)" class="badge bg-success bg-opacity-10 text-success rounded-pill border border-success border-opacity-25">
+                            <i class="fa-solid fa-check-circle me-1"></i> Applied
+                          </span>
+                        </div>
+                        <h6 class="text-muted mb-2">{{ job.companyName }}</h6>
+                        <div class="d-flex flex-wrap gap-3 small text-muted">
+                          <span><i class="fa-solid fa-location-dot me-1"></i> {{ job.location }}</span>
+                          <span><i class="fa-regular fa-clock me-1"></i> {{ job.postedDate | date:'shortDate' }}</span>
+                          <span *ngIf="job.salary"><i class="fa-solid fa-money-bill-wave me-1"></i> {{ job.salary }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 text-md-end">
+                    <button class="btn btn-outline-main rounded-pill px-4 py-2 fw-medium" 
+                            (click)="openJobDetails(job)"
+                            [disabled]="!auth.isAdmin() && appliedJobIds.has(job.id)">
+                      {{ (!auth.isAdmin() && appliedJobIds.has(job.id)) ? 'Already Applied' : (auth.isAdmin() ? 'View Details' : 'View Details & Apply') }}
+                    </button>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          } @empty {
+            <div class="col-12">
+              <div class="text-center py-5 bg-white rounded-4 border shadow-sm">
+                <i class="fa-solid fa-briefcase fs-1 text-muted opacity-25 mb-3"></i>
+                <h5 class="fw-bold text-dark mb-1">No jobs found</h5>
+                <p class="text-muted">Try adjusting your filters or search term.</p>
+                <button class="btn btn-outline-main rounded-pill px-4 mt-2" (click)="searchTerm = ''; selectedType = 'All'; applyFilters()">Clear Filters</button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Job Details & Application Modal Overlay -->
+<div class="modal-backdrop fade show" *ngIf="isModalOpen"></div>
+<div class="modal fade show d-block" tabindex="-1" *ngIf="isModalOpen" aria-modal="true" role="dialog" (click)="closeModal()">
+  <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" (click)="$event.stopPropagation()">
+    <div class="modal-content border-0 shadow-lg rounded-4">
+      
+      <!-- Modal Header -->
+      <div class="modal-header bg-light border-bottom-0 p-4 pb-0">
+        <div class="d-flex align-items-center gap-3 w-100 pe-4">
+          <div class="company-logo bg-white text-main rounded-circle d-flex align-items-center justify-content-center fw-bold fs-3 shadow-sm border" style="width: 60px; height: 60px;">
+            {{ selectedJob?.companyName?.charAt(0)?.toUpperCase() }}
+          </div>
+          <div>
+            <h4 class="fw-bold font-heading mb-1 text-dark">{{ selectedJob?.title }}</h4>
+            <h6 class="text-muted mb-0">{{ selectedJob?.companyName }} &bull; {{ selectedJob?.location }}</h6>
+          </div>
+        </div>
+        <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body p-4 pt-3">
+        <div class="d-flex flex-wrap gap-2 mb-4 pb-3 border-bottom">
+          <span class="badge bg-main-light text-main px-3 py-2 rounded-pill"><i class="fa-solid fa-briefcase me-1"></i> {{ selectedJob?.type }}</span>
+          <span class="badge bg-light text-dark px-3 py-2 rounded-pill border"><i class="fa-regular fa-calendar me-1"></i> Posted {{ selectedJob?.postedDate | date:'mediumDate' }}</span>
+          <span class="badge bg-light text-dark px-3 py-2 rounded-pill border" *ngIf="selectedJob?.salary"><i class="fa-solid fa-money-bill-wave me-1"></i> {{ selectedJob?.salary }}</span>
+        </div>
+
+        <h6 class="fw-bold text-dark mb-3">Job Description</h6>
+        <p class="text-muted lh-lg mb-4">{{ selectedJob?.description || 'No description provided.' }}</p>
+
+        <h6 class="fw-bold text-dark mb-3">Requirements</h6>
+        <p class="text-muted lh-lg mb-5">{{ selectedJob?.requirements || 'No specific requirements listed.' }}</p>
+
+        <div class="bg-main-light p-4 rounded-3 border border-primary border-opacity-25" [class.opacity-50]="auth.isAdmin()">
+          <h6 class="fw-bold text-main mb-3"><i class="fa-solid fa-paper-plane me-2"></i> Apply for this position</h6>
+          
+          <div *ngIf="auth.isAdmin()" class="alert alert-warning py-2 small mb-3">
+            <i class="fa-solid fa-triangle-exclamation me-1"></i> As an Admin, you cannot apply for jobs.
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-medium text-dark">Upload CV (Required) <span class="text-danger">*</span></label>
+            <input type="file" class="form-control" accept=".pdf,.doc,.docx" (change)="onFileSelected($event)" [disabled]="auth.isAdmin()">
+            <small class="text-muted mt-1 d-block">Max size: 5MB. Formats: PDF, DOC, DOCX.</small>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-medium text-dark">Cover Letter / Application Note</label>
+            <textarea class="form-control" rows="4" placeholder="Tell the employer why you are a great fit for this role..." [(ngModel)]="coverLetter" [disabled]="auth.isAdmin()"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer p-4 bg-light border-0 justify-content-between">
+        <button type="button" class="btn btn-outline-secondary rounded-pill px-4" (click)="closeModal()">Cancel</button>
+        <button type="button" class="btn btn-main rounded-pill px-5 shadow-sm fw-bold" (click)="submitApplication()" [disabled]="isApplying || !cvFile || auth.isAdmin()">
+          <span *ngIf="isApplying" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+          {{ isApplying ? 'Sending...' : 'Submit Application' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Custom Toast Notification -->
+<div *ngIf="showToast" 
+     class="position-fixed top-0 end-0 p-3 mt-5" 
+     style="z-index: 9999;">
+  <div class="toast show align-items-center text-white border-0" 
+       [ngClass]="toastType === 'success' ? 'bg-success' : 'bg-danger'" 
+       role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body fw-bold">
+        <i class="fa-solid me-2" [ngClass]="toastType === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation'"></i>
+        {{ toastMessage }}
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" (click)="showToast = false" aria-label="Close"></button>
+    </div>
+  </div>
+</div>

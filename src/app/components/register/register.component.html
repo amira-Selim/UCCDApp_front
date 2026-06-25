@@ -1,0 +1,166 @@
+<section class="auth-section py-5 min-vh-100 bg-light d-flex align-items-center">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-10 col-lg-8 col-xl-7">
+        <div class="premium-card p-4 p-sm-5 shadow-lg border-0">
+          
+          <div class="text-center mb-5">
+            <h2 class="font-heading fw-bold text-dark mb-2">Create an Account</h2>
+            <p class="text-muted">Join UCCD and kickstart your career journey</p>
+          </div>
+
+          <form [formGroup]="registerForm" (ngSubmit)="registerSubmit()">
+            
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="firstName" class="form-label fw-medium text-dark small mb-1">First Name</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-regular fa-user"></i></span>
+                  <input type="text" class="form-control border-start-0 ps-0" id="firstName" formControlName="firstName" placeholder="John">
+                </div>
+                @if (registerForm.get('firstName')?.errors && (registerForm.get('firstName')?.touched || registerForm.get('firstName')?.dirty)) {
+                  <div class="text-danger small mt-1">
+                    @if (registerForm.get('firstName')?.getError('required')) {
+                      <i class="fa-solid fa-circle-exclamation me-1"></i> Required
+                    } @else if (registerForm.get('firstName')?.getError('minlength')) {
+                      <i class="fa-solid fa-circle-exclamation me-1"></i> Min 3 chars
+                    } @else if (registerForm.get('firstName')?.getError('maxlength')) {
+                      <i class="fa-solid fa-circle-exclamation me-1"></i> Max 20 chars
+                    }
+                  </div>
+                }
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label for="lastName" class="form-label fw-medium text-dark small mb-1">Last Name</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-regular fa-user"></i></span>
+                  <input type="text" class="form-control border-start-0 ps-0" id="lastName" formControlName="lastName" placeholder="Doe">
+                </div>
+                @if (registerForm.get('lastName')?.errors && (registerForm.get('lastName')?.touched || registerForm.get('lastName')?.dirty)) {
+                  <div class="text-danger small mt-1">
+                    @if (registerForm.get('lastName')?.getError('required')) {
+                      <i class="fa-solid fa-circle-exclamation me-1"></i> Required
+                    } @else if (registerForm.get('lastName')?.getError('minlength')) {
+                      <i class="fa-solid fa-circle-exclamation me-1"></i> Min 3 chars
+                    } @else if (registerForm.get('lastName')?.getError('maxlength')) {
+                      <i class="fa-solid fa-circle-exclamation me-1"></i> Max 20 chars
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="email" class="form-label fw-medium text-dark small mb-1">Email Address</label>
+              <div class="input-group">
+                <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-regular fa-envelope"></i></span>
+                <input type="email" class="form-control border-start-0 ps-0" id="email" formControlName="email" placeholder="name@example.com">
+              </div>
+              @if (registerForm.get('email')?.errors && (registerForm.get('email')?.touched || registerForm.get('email')?.dirty)) {
+                <div class="text-danger small mt-1">
+                  @if (registerForm.get('email')?.getError('required')) {
+                    <i class="fa-solid fa-circle-exclamation me-1"></i> Email is required
+                  } @else if (registerForm.get('email')?.getError('email')) {
+                    <i class="fa-solid fa-circle-exclamation me-1"></i> Invalid email
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="mb-3">
+              <label for="phoneNumber" class="form-label fw-medium text-dark small mb-1">Phone Number</label>
+              <div class="input-group">
+                <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-phone"></i></span>
+                <input type="tel" class="form-control border-start-0 ps-0" id="phoneNumber" formControlName="phoneNumber" placeholder="e.g. 01012345678">
+              </div>
+              @if (registerForm.get('phoneNumber')?.errors && (registerForm.get('phoneNumber')?.touched || registerForm.get('phoneNumber')?.dirty)) {
+                <div class="text-danger small mt-1">
+                  @if (registerForm.get('phoneNumber')?.getError('required')) {
+                    <i class="fa-solid fa-circle-exclamation me-1"></i> Phone is required
+                  } @else if (registerForm.get('phoneNumber')?.getError('pattern')) {
+                    <i class="fa-solid fa-circle-exclamation me-1"></i> Invalid phone number
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-4">
+                <label for="password" class="form-label fw-medium text-dark small mb-1">Password</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-lock"></i></span>
+                  <input [type]="showPassword ? 'text' : 'password'" class="form-control border-start-0 border-end-0 ps-0" id="password" formControlName="password" placeholder="Create a strong password">
+                  <span class="input-group-text bg-white border-start-0" style="cursor: pointer;" (click)="showPassword = !showPassword">
+                    <i class="fa-regular" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                  </span>
+                </div>
+                @if (registerForm.get('password')?.errors && registerForm.get('password')?.touched) {
+                  <div class="text-danger small mt-1">
+                    @if (registerForm.get('password')?.getError('required')) {
+                      <i class="fa-solid fa-circle-exclamation me-1"></i> Password is required
+                    } @else if (registerForm.get('password')?.getError('pattern')) {
+                      <i class="fa-solid fa-circle-exclamation me-1"></i> Password format is invalid
+                    }
+                  </div>
+                }
+              </div>
+
+              <div class="col-md-6 mb-4">
+                <label for="rePassword" class="form-label fw-medium text-dark small mb-1">Confirm Password</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-lock"></i></span>
+                  <input [type]="showRePassword ? 'text' : 'password'" class="form-control border-start-0 border-end-0 ps-0" id="rePassword" formControlName="rePassword" placeholder="Confirm your password">
+                  <span class="input-group-text bg-white border-start-0" style="cursor: pointer;" (click)="showRePassword = !showRePassword">
+                    <i class="fa-regular" [ngClass]="showRePassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                  </span>
+                </div>
+                @if ((registerForm.get('rePassword')?.errors || registerForm.hasError('passwordMismatch')) && registerForm.get('rePassword')?.touched) {
+                  <div class="text-danger small mt-1">
+                    @if (registerForm.get('rePassword')?.getError('required')) {
+                      <i class="fa-solid fa-circle-exclamation me-1"></i> Please confirm your password
+                    } @else if (registerForm.hasError('passwordMismatch')) {
+                      <i class="fa-solid fa-circle-exclamation me-1"></i> Passwords do not match
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+
+            @if (msgSuccess) {
+              <div class="alert alert-success d-flex align-items-center py-2" role="alert">
+                <i class="fa-solid fa-circle-check me-2"></i>
+                <div class="small">{{ msgSuccess }}</div>
+              </div>
+            }
+
+            @if (msgError) {
+              <div class="alert alert-danger d-flex align-items-center py-2" role="alert">
+                <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                <div class="small">{{ msgError }}</div>
+              </div>
+            }
+
+            <div class="d-grid mt-5">
+              <button [disabled]="isLoading" type="submit" class="btn btn-main btn-lg py-2 fw-bold">
+                @if (isLoading) {
+                  <i class="fas fa-spin fa-spinner me-2"></i> Creating account...
+                } @else {
+                  Create Account
+                }
+              </button>
+            </div>
+            
+            <div class="text-center mt-4">
+              <p class="text-muted small mb-0">
+                Already have an account? <a routerLink="/auth/login" class="text-main fw-bold text-decoration-none">Sign in</a>
+              </p>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+

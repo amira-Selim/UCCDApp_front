@@ -1,0 +1,52 @@
+<div class="page-head mb-4 d-flex align-items-center gap-3">
+  <button class="btn btn-outline-secondary btn-sm" routerLink="/admin/jobs">
+    <i class="fa-solid fa-arrow-left"></i>
+  </button>
+  <div>
+    <h3 class="fw-bold mb-1">Job Opportunity Details</h3>
+    <p class="text-muted mb-0">Review job details and applicants</p>
+  </div>
+</div>
+
+<app-loading-spinner *ngIf="loading()" message="Loading details..."></app-loading-spinner>
+
+<div *ngIf="!loading() && job()" class="row g-4">
+  <div class="col-lg-4">
+    <div class="card-panel h-100">
+      <h5 class="fw-bold mb-3">Job Info</h5>
+      <p><strong>Title:</strong> {{ job()?.title }}</p>
+      <p><strong>Company:</strong> {{ job()?.companyName }}</p>
+      <p><strong>Email:</strong> {{ job()?.companyEmail }}</p>
+      <p><strong>Location:</strong> {{ job()?.location }}</p>
+      <p><strong>Type:</strong> {{ job()?.type }}</p>
+      <p><strong>Target Faculty:</strong> {{ job()?.targetFaculty }}</p>
+      <p><strong>Deadline:</strong> {{ job()?.deadline | date:'mediumDate' }}</p>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="card-panel h-100">
+      <h5 class="fw-bold mb-4">Applicants <span class="badge bg-secondary ms-2">{{ applications().length }}</span></h5>
+
+      <app-loading-spinner *ngIf="applicationsLoading()" message="Loading applicants..."></app-loading-spinner>
+
+      <app-empty-state
+        *ngIf="!applicationsLoading() && applications().length === 0"
+        message="No applicants yet"
+        icon="fa-solid fa-user-clock">
+      </app-empty-state>
+
+      <div class="applicant-row d-flex align-items-center justify-content-between p-3 mb-3 border rounded bg-light" *ngFor="let app of applications()">
+        <div>
+          <p class="mb-0 fw-medium">{{ app.studentFullName }}</p>
+          <p class="mb-0 text-muted small">{{ app.studentEmail }} · {{ app.studentFaculty }}</p>
+          <p class="mb-0 text-muted small">Applied {{ app.appliedAt | date:'medium' }}</p>
+        </div>
+        <a [href]="app.cvFilePath" target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary">
+          <i class="fa-solid fa-file-arrow-down me-1"></i> View CV
+        </a>
+      </div>
+
+    </div>
+  </div>
+</div>

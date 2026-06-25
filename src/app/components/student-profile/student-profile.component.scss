@@ -1,0 +1,65 @@
+.profile-dashboard {
+  .avatar-circle {
+    box-shadow: var(--shadow-md);
+  }
+
+  .min-vh-50 {
+    min-height: 50vh;
+  }
+
+  .w-20px {
+    display: inline-block;
+    width: 20px;
+  }
+
+  .optional-hint {
+    display: block;
+    margin-top: 0.35rem;
+    font-style: italic;
+  }
+
+  .custom-tabs {
+    .nav-link {
+      color: var(--text-dark);
+      border-radius: 8px;
+      padding: 12px 16px;
+      transition: all 0.3s ease;
+      background-color: transparent;
+      border: none;
+
+      i {
+        width: 24px;
+      }
+
+      &:hover {
+        background-color: var(--main-color-light);
+        color: var(--main-color);
+      }
+
+      &.active {
+        background-color: var(--main-color);
+        color: white;
+        box-shadow: var(--shadow-sm);
+      }
+    }
+  }
+
+  .hover-lift {
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+  }
+
+  input:disabled,
+  textarea:disabled {
+    background-color: var(--secondary-color);
+    cursor: default;
+  }
+
+  input:not(:disabled):not([readonly]),
+  textarea:not(:disabled) {
+    border-color: var(--main-color);
+  }
+}
+

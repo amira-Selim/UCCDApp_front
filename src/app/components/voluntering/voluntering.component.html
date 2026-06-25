@@ -1,0 +1,145 @@
+<section class="volunteering-section min-vh-100 bg-light py-5">
+  <!-- Header -->
+  <div class="container mb-5 text-center">
+    <h1 class="display-5 fw-bold text-dark font-heading mb-3">{{ 'volunteering.title' | translate }}</h1>
+    <p class="text-muted lead mx-auto" style="max-width: 600px;">{{ 'volunteering.subtitle' | translate }}</p>
+  </div>
+
+  <div class="container">
+    <div class="row justify-content-center mb-5">
+      <div class="col-lg-8">
+        <div class="search-box bg-white p-2 rounded-pill shadow-sm d-flex align-items-center border">
+          <i class="fa-solid fa-search text-muted ms-3 me-2"></i>
+          <input type="text" class="form-control border-0 shadow-none bg-transparent" [placeholder]="'volunteering.searchPlaceholder' | translate" [(ngModel)]="searchTerm" (input)="applyFilters()" (keyup.enter)="applyFilters()">
+          <button class="btn btn-main rounded-pill px-4" (click)="applyFilters()">{{ 'common.search' | translate }}</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+      <!-- Volunteer List -->
+      <div class="col-lg-10">
+
+        @if (isLoading) {
+          <div class="text-center py-5">
+            <div class="spinner-border text-main" role="status"></div>
+          </div>
+        } @else if (loadError) {
+          <div class="text-center py-5 bg-white rounded-4 border shadow-sm">
+            <i class="fa-solid fa-triangle-exclamation fs-1 text-danger opacity-50 mb-3"></i>
+            <h5 class="fw-bold text-dark mb-1">Couldn't load opportunities</h5>
+            <p class="text-muted mb-3">Something went wrong while fetching volunteering opportunities.</p>
+            <button class="btn btn-outline-main" (click)="loadOpportunities()">Retry</button>
+          </div>
+        } @else {
+          <div class="row g-4">
+            @for (volunteer of filteredVolunteers; track volunteer.id) {
+              <div class="col-md-6">
+                <div class="premium-card p-4 border-0 vol-card transition-normal hover-lift h-100 d-flex flex-column">
+                  <div class="d-flex align-items-center gap-3 mb-3 pb-3 border-bottom">
+                    <div class="icon-circle bg-main-light text-main rounded-circle d-flex align-items-center justify-content-center fs-4 flex-shrink-0" style="width: 60px; height: 60px;">
+                      <i class="fa-solid fa-hand-holding-heart"></i>
+                    </div>
+                    <div>
+                      <h5 class="fw-bold font-heading mb-1 text-dark">{{ volunteer.title }}</h5>
+                      <h6 class="text-muted mb-0">{{ volunteer.committee }} Committee</h6>
+                      <span *ngIf="!auth.isAdmin() && appliedVolunteerIds.has(volunteer.id)" class="badge bg-success bg-opacity-10 text-success mt-2 rounded-pill border border-success border-opacity-25">
+                        <i class="fa-solid fa-check-circle me-1"></i> Applied
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="mb-4 flex-grow-1">
+                    <p class="text-muted small lh-lg line-clamp-3">{{ volunteer.description }}</p>
+                    <div class="d-flex flex-wrap gap-2 small mt-3">
+                      <span class="badge bg-light text-dark border"><i class="fa-solid fa-users me-1 text-muted"></i> {{ remainingSpots(volunteer) }} {{ 'volunteering.spotsLeft' | translate }}</span>
+                      <span class="badge bg-light text-dark border" *ngIf="volunteer.deadline"><i class="fa-regular fa-calendar me-1 text-muted"></i> {{ 'volunteering.deadline' | translate }}: {{ volunteer.deadline | date:'mediumDate' }}</span>
+                    </div>
+                  </div>
+
+                  <button class="btn btn-outline-main w-100 rounded-pill fw-medium" 
+                          (click)="openVolunteerDetails(volunteer)"
+                          [disabled]="!auth.isAdmin() && appliedVolunteerIds.has(volunteer.id)">
+                    {{ (!auth.isAdmin() && appliedVolunteerIds.has(volunteer.id)) ? 'Already Applied' : (auth.isAdmin() ? 'Read More' : ('volunteering.readMoreApply' | translate)) }}
+                  </button>
+                </div>
+              </div>
+            } @empty {
+              <div class="col-12">
+                <div class="text-center py-5 bg-white rounded-4 border shadow-sm">
+                  <i class="fa-solid fa-hands-holding-circle fs-1 text-muted opacity-25 mb-3"></i>
+                  <h5 class="fw-bold text-dark mb-1">{{ 'volunteering.empty' | translate }}</h5>
+                  <p class="text-muted">Try adjusting your search term, or check back soon for new opportunities.</p>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Volunteer Details & Application Modal Overlay -->
+<div class="modal-backdrop fade show" *ngIf="isModalOpen"></div>
+<div class="modal fade show d-block" tabindex="-1" *ngIf="isModalOpen" aria-modal="true" role="dialog" (click)="closeModal()">
+  <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" (click)="$event.stopPropagation()">
+    <div class="modal-content border-0 shadow-lg rounded-4">
+      
+      <!-- Modal Header -->
+      <div class="modal-header bg-light border-bottom-0 p-4 pb-0">
+        <div class="d-flex align-items-center gap-3 w-100 pe-4">
+          <div class="icon-circle bg-white text-main rounded-circle d-flex align-items-center justify-content-center fw-bold fs-3 shadow-sm border" style="width: 60px; height: 60px;">
+            <i class="fa-solid fa-handshake-angle"></i>
+          </div>
+          <div>
+            <h4 class="fw-bold font-heading mb-1 text-dark">{{ selectedVolunteer?.title }}</h4>
+            <h6 class="text-muted mb-0">{{ selectedVolunteer?.committee }} Committee</h6>
+          </div>
+        </div>
+        <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body p-4 pt-3">
+        <div class="d-flex flex-wrap gap-2 mb-4 pb-3 border-bottom">
+          <span class="badge bg-light text-dark px-3 py-2 rounded-pill border"><i class="fa-solid fa-users me-1 text-muted"></i> {{ selectedVolunteer ? remainingSpots(selectedVolunteer) : 0 }} {{ 'volunteering.spotsLeft' | translate }}</span>
+          <span class="badge bg-light text-dark px-3 py-2 rounded-pill border" *ngIf="selectedVolunteer?.deadline"><i class="fa-regular fa-calendar me-1 text-muted"></i> {{ 'volunteering.deadline' | translate }}: {{ selectedVolunteer?.deadline | date:'mediumDate' }}</span>
+        </div>
+
+        <h6 class="fw-bold text-dark mb-3">Role Description</h6>
+        <p class="text-muted lh-lg mb-5">{{ selectedVolunteer?.description || 'No description provided.' }}</p>
+
+        <div class="bg-main-light p-4 rounded-3 border border-primary border-opacity-25" [class.opacity-50]="auth.isAdmin()">
+          <h6 class="fw-bold text-main mb-3"><i class="fa-solid fa-heart me-2"></i> Join the Cause</h6>
+          
+          <div *ngIf="auth.isAdmin()" class="alert alert-warning py-2 small mb-3">
+            <i class="fa-solid fa-triangle-exclamation me-1"></i> As an Admin, you cannot apply for volunteering.
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-medium text-dark">{{ 'volunteering.motivationLabel' | translate }}</label>
+            <textarea class="form-control" rows="4" placeholder="Briefly explain your motivation..." [(ngModel)]="motivationText" [disabled]="auth.isAdmin()"></textarea>
+          </div>
+          <div class="mb-1">
+            <label class="form-label small fw-medium text-dark">{{ 'volunteering.skillsLabel' | translate }}</label>
+            <input type="text" class="form-control" placeholder="e.g. Photography, Public Speaking, Excel" [(ngModel)]="skillsText" [disabled]="auth.isAdmin()" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer p-4 bg-light border-0 justify-content-between">
+        <button type="button" class="btn btn-outline-secondary rounded-pill px-4" (click)="closeModal()">{{ 'common.cancel' | translate }}</button>
+        <button type="button" class="btn btn-main rounded-pill px-5 shadow-sm fw-bold" (click)="submitApplication()" [disabled]="isApplying || motivationText.trim() === '' || auth.isAdmin()">
+          @if (isApplying) {
+            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Sending...
+          } @else {
+            {{ 'volunteering.submitApplication' | translate }}
+          }
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

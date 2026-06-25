@@ -1,0 +1,9 @@
+<div class="toast-stack">
+  <div class="app-toast" *ngFor="let toast of notificationService.toasts()" [ngClass]="'toast-' + toast.type">
+    <i [class]="iconFor(toast.type)"></i>
+    <span class="flex-grow-1">{{ toast.text }}</span>
+    <button type="button" class="toast-close" (click)="notificationService.dismiss(toast.id)">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
+</div>

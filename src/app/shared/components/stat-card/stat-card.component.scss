@@ -1,0 +1,70 @@
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: var(--shadow);
+  height: 100%;
+  border-left: 4px solid var(--main-color);
+}
+
+.stat-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  background: rgba(53, 114, 165, 0.12);
+  color: var(--main-color);
+  flex-shrink: 0;
+}
+
+.stat-label {
+  margin: 0 0 0.25rem;
+  font-size: 0.82rem;
+  color: #667085;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.stat-value {
+  margin: 0;
+  font-weight: 700;
+  font-size: 1.6rem;
+  color: #1d2939;
+}
+
+.stat-trend {
+  font-size: 0.78rem;
+  color: #667085;
+}
+
+.stat-skeleton {
+  height: 1.6rem;
+  width: 70px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #eef1f4 25%, #e3e7eb 37%, #eef1f4 63%);
+  background-size: 400% 100%;
+  animation: skeleton-loading 1.4s ease infinite;
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+
+.accent-success { border-left-color: #1f9d55; }
+.accent-success .stat-icon { background: rgba(31, 157, 85, 0.12); color: #1f9d55; }
+
+.accent-warning { border-left-color: #e0a020; }
+.accent-warning .stat-icon { background: rgba(224, 160, 32, 0.12); color: #e0a020; }
+
+.accent-danger { border-left-color: #d6342c; }
+.accent-danger .stat-icon { background: rgba(214, 52, 44, 0.12); color: #d6342c; }
+
+.accent-info { border-left-color: #2098d1; }
+.accent-info .stat-icon { background: rgba(32, 152, 209, 0.12); color: #2098d1; }

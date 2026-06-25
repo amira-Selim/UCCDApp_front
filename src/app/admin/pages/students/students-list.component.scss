@@ -1,0 +1,29 @@
+:host {
+  display: block;
+}
+
+.student-detail-modal {
+  width: min(820px, 95vw);
+}
+
+.registered-courses-title {
+  margin-top: 1.1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid #eef1f4;
+}
+
+.registered-table {
+  th {
+    color: #667085;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    border-bottom-width: 1px;
+  }
+
+  td {
+    font-size: 0.9rem;
+    vertical-align: middle;
+  }
+}

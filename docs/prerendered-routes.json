@@ -1,0 +1,30 @@
+{
+  "routes": [
+    "/",
+    "/about",
+    "/admin",
+    "/admin/courses",
+    "/admin/dashboard",
+    "/admin/jobs",
+    "/admin/messages",
+    "/admin/students",
+    "/admin/volunteers",
+    "/auth",
+    "/auth/forgot-password",
+    "/auth/login",
+    "/auth/register",
+    "/auth/reset-password",
+    "/contact",
+    "/courses",
+    "/home",
+    "/jobs",
+    "/profile",
+    "/showStudent",
+    "/signout",
+    "/student-profile",
+    "/unauthorized",
+    "/volunteering",
+    "/wish-list",
+    "/workshops"
+  ]
+}

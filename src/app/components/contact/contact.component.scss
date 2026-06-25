@@ -1,0 +1,30 @@
+.contact-section {
+  .custom-radio {
+    cursor: pointer;
+    &:hover {
+      background-color: white !important;
+      border-color: var(--main-color) !important;
+    }
+  }
+
+  .border-main {
+    border-color: var(--main-color) !important;
+    background-color: var(--main-light) !important;
+  }
+
+  input.form-control, textarea.form-control {
+    &:focus {
+      background-color: white !important;
+      border: 1px solid var(--main-color) !important;
+      box-shadow: 0 0 0 0.25rem rgba(var(--main-color-rgb, 0, 51, 102), 0.1) !important;
+    }
+  }
+
+  .hover-lift {
+    &:hover {
+      transform: translateY(-3px);
+      background-color: white !important;
+      color: var(--main-color) !important;
+    }
+  }
+}

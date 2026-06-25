@@ -1,0 +1,122 @@
+<div class="offcanvas offcanvas-end" id="sidebar">
+
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title">{{ 'sidebar.menu' | translate }}</h5>
+
+    <button type="button"
+            class="btn-close"
+            data-bs-dismiss="offcanvas">
+    </button>
+
+  </div>
+
+  <div class="offcanvas-body d-flex flex-column">
+
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item border-bottom-0 mb-3">
+        <a class="nav-link"
+           [routerLink]="auth.isAdmin() ? '/admin/dashboard' : '/student-profile'"
+           data-bs-dismiss="offcanvas">
+           <i class="fa-solid fa-id-badge me-2" *ngIf="!auth.isAdmin()"></i> 
+           <i class="fa-solid fa-gauge-high me-2" *ngIf="auth.isAdmin()"></i>
+           {{ auth.isAdmin() ? ('nav.admin' | translate) : ('sidebar.studentProfile' | translate) }}
+        </a>
+      </li>
+
+      <ng-container *ngIf="!auth.isAdmin()">
+        <li class="list-group-item">
+          <a class="nav-link"
+             routerLink="/student-profile"
+             [queryParams]="{tab: 'courses'}"
+             data-bs-dismiss="offcanvas">
+            <i class="fa-solid fa-book-open me-2"></i> {{ 'profile.myCourses' | translate }}
+          </a>
+        </li>
+
+        <li class="list-group-item border-bottom-0">
+          <a class="nav-link"
+             routerLink="/student-profile"
+             [queryParams]="{tab: 'wishlist'}"
+             data-bs-dismiss="offcanvas">
+            <i class="fa-regular fa-heart me-2"></i> {{ 'profile.savedItems' | translate }}
+          </a>
+        </li>
+      </ng-container>
+
+    </ul>
+
+    <!-- Preferences: Theme + Language -->
+    <div class="sidebar-preferences mt-4 pt-3 border-top">
+      <h6 class="text-muted text-uppercase small fw-bold mb-3 px-1">{{ 'sidebar.preferences' | translate }}</h6>
+
+      <!-- Theme toggle -->
+      <div class="d-flex align-items-center justify-content-between px-1 mb-3">
+        <label class="small fw-medium text-muted mb-0">{{ 'sidebar.theme' | translate }}</label>
+        <div class="bg-light border rounded-pill p-1 d-flex" style="width: 100px;">
+          <button type="button" class="btn btn-sm w-50 rounded-pill border-0 shadow-none d-flex align-items-center justify-content-center"
+                  [class.bg-white]="theme.theme() === 'light'"
+                  [class.text-main]="theme.theme() === 'light'"
+                  [class.shadow-sm]="theme.theme() === 'light'"
+                  [class.text-muted]="theme.theme() !== 'light'"
+                  [class.bg-transparent]="theme.theme() !== 'light'"
+                  (click)="setTheme('light')">
+            <i class="fa-solid fa-sun" style="font-size: 0.85rem;"></i>
+          </button>
+          <button type="button" class="btn btn-sm w-50 rounded-pill border-0 shadow-none d-flex align-items-center justify-content-center"
+                  [class.bg-dark]="theme.theme() === 'dark'"
+                  [class.text-white]="theme.theme() === 'dark'"
+                  [class.shadow-sm]="theme.theme() === 'dark'"
+                  [class.text-muted]="theme.theme() !== 'dark'"
+                  [class.bg-transparent]="theme.theme() !== 'dark'"
+                  (click)="setTheme('dark')">
+            <i class="fa-solid fa-moon" style="font-size: 0.85rem;"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Language toggle -->
+      <div class="d-flex align-items-center justify-content-between px-1 mb-2">
+        <label class="small fw-medium text-muted mb-0">{{ 'sidebar.language' | translate }}</label>
+        <div class="bg-light border rounded-pill p-1 d-flex" style="width: 100px;">
+          <button type="button" class="btn btn-sm w-50 rounded-pill border-0 shadow-none fw-bold"
+                  style="font-size: 0.8rem;"
+                  [class.bg-white]="lang.current() === 'en'"
+                  [class.text-main]="lang.current() === 'en'"
+                  [class.shadow-sm]="lang.current() === 'en'"
+                  [class.text-muted]="lang.current() !== 'en'"
+                  [class.bg-transparent]="lang.current() !== 'en'"
+                  (click)="setLanguage('en')">
+            EN
+          </button>
+          <button type="button" class="btn btn-sm w-50 rounded-pill border-0 shadow-none fw-bold"
+                  style="font-size: 0.8rem;"
+                  [class.bg-white]="lang.current() === 'ar'"
+                  [class.text-main]="lang.current() === 'ar'"
+                  [class.shadow-sm]="lang.current() === 'ar'"
+                  [class.text-muted]="lang.current() !== 'ar'"
+                  [class.bg-transparent]="lang.current() !== 'ar'"
+                  (click)="setLanguage('ar')">
+            AR
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sign out -->
+    <div class="mt-auto pt-3 border-top">
+      <button *ngIf="auth.isLoggedIn(); else signInLink"
+              type="button"
+              class="btn btn-outline-danger w-100 rounded-pill"
+              data-bs-dismiss="offcanvas"
+              (click)="signOut()">
+        <i class="fa-solid fa-right-from-bracket me-2"></i> {{ 'sidebar.signOut' | translate }}
+      </button>
+      <ng-template #signInLink>
+        <a routerLink="/auth/login" class="btn btn-main w-100 rounded-pill" data-bs-dismiss="offcanvas">
+          <i class="fa-solid fa-right-to-bracket me-2"></i> {{ 'sidebar.signIn' | translate }}
+        </a>
+      </ng-template>
+    </div>
+
+  </div>
+</div>

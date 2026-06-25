@@ -1,0 +1,86 @@
+<div class="page-head mb-4 d-flex align-items-center justify-content-between flex-wrap gap-2">
+  <div>
+    <h3 class="fw-bold mb-1">Volunteer Opportunities</h3>
+    <p class="text-muted mb-0">Manage volunteering opportunities and review applicants.</p>
+  </div>
+  <button class="btn btn-main" (click)="openCreateForm()">
+    <i class="fa-solid fa-plus me-2"></i> New Opportunity
+  </button>
+</div>
+
+<div class="card-panel">
+  <app-data-table
+    [data]="opportunities()"
+    [columns]="columns"
+    [loading]="loading()"
+    [error]="error()"
+    searchPlaceholder="Search by title or committee..."
+    emptyMessage="No volunteer opportunities found"
+    emptyIcon="fa-solid fa-handshake-angle">
+    <ng-template #rowActions let-row>
+      <button class="btn btn-sm btn-outline-secondary me-1" (click)="openEditForm(row)" title="Edit">
+        <i class="fa-solid fa-pen"></i>
+      </button>
+      <button class="btn btn-sm btn-outline-primary position-relative" (click)="viewApplications(row)" title="View Applicants">
+        <i class="fa-solid fa-users"></i>
+        <span *ngIf="row.pendingApplicantsCount > 0" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
+          {{ row.pendingApplicantsCount }}
+          <span class="visually-hidden">pending</span>
+        </span>
+      </button>
+    </ng-template>
+  </app-data-table>
+</div>
+
+<!-- Create/Edit modal -->
+<div class="detail-modal-backdrop" *ngIf="showForm()" (click)="closeForm()"></div>
+<div class="detail-modal" *ngIf="showForm()">
+  <div class="detail-header d-flex align-items-center justify-content-between">
+    <h5 class="mb-0">{{ editingOpportunity() ? 'Edit Opportunity' : 'New Opportunity' }}</h5>
+    <button class="btn-close" (click)="closeForm()"></button>
+  </div>
+
+  <form [formGroup]="opportunityForm" (ngSubmit)="submitForm()">
+    <div class="detail-body">
+      <div class="mb-3">
+        <label class="form-label">Title</label>
+        <input type="text" class="form-control" formControlName="title" [class.is-invalid]="isInvalid('title')" />
+        <div class="invalid-feedback invalid-feedback-block" *ngIf="isInvalid('title')">Title is required.</div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Description</label>
+        <textarea class="form-control" rows="3" formControlName="description" [class.is-invalid]="isInvalid('description')"></textarea>
+        <div class="invalid-feedback invalid-feedback-block" *ngIf="isInvalid('description')">Description must be at least 10 characters.</div>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-sm-6">
+          <label class="form-label">Committee</label>
+          <input type="text" class="form-control" formControlName="committee" [class.is-invalid]="isInvalid('committee')" />
+          <div class="invalid-feedback invalid-feedback-block" *ngIf="isInvalid('committee')">Committee is required.</div>
+        </div>
+        <div class="col-sm-6">
+          <label class="form-label">Required Count</label>
+          <input type="number" min="1" class="form-control" formControlName="requiredCount" [class.is-invalid]="isInvalid('requiredCount')" />
+          <div class="invalid-feedback invalid-feedback-block" *ngIf="isInvalid('requiredCount')">Required count must be at least 1.</div>
+        </div>
+      </div>
+
+      <div class="mb-1 mt-3">
+        <label class="form-label">Deadline</label>
+        <input type="date" class="form-control" formControlName="deadline" [class.is-invalid]="isInvalid('deadline')" />
+        <div class="invalid-feedback invalid-feedback-block" *ngIf="isInvalid('deadline')">Deadline is required.</div>
+      </div>
+    </div>
+
+    <div class="detail-footer d-flex justify-content-end gap-2">
+      <button type="button" class="btn btn-light" (click)="closeForm()">Cancel</button>
+      <button type="submit" class="btn btn-main" [disabled]="saving()">
+        <span class="spinner-border spinner-border-sm me-2" *ngIf="saving()"></span>
+        {{ editingOpportunity() ? 'Save Changes' : 'Create Opportunity' }}
+      </button>
+    </div>
+  </form>
+</div>
+

@@ -1,0 +1,121 @@
+<div class="data-table-wrapper">
+
+  <div class="table-toolbar d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3" *ngIf="searchable">
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass search-icon"></i>
+      <input
+        type="text"
+        class="form-control"
+        [placeholder]="searchPlaceholder"
+        [ngModel]="searchTerm"
+        (ngModelChange)="onSearchChange($event)" />
+    </div>
+
+    <div class="d-flex align-items-center gap-2">
+      <span class="text-muted small">Rows:</span>
+      <select class="form-select form-select-sm page-size-select" [ngModel]="pageSize" (ngModelChange)="onPageSizeChange($event)">
+        <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  <div class="state-box" *ngIf="loading">
+    <app-loading-spinner message="Loading data..."></app-loading-spinner>
+  </div>
+
+  <!-- Error state -->
+  <div class="state-box text-center py-5" *ngIf="!loading && error">
+    <i class="fa-solid fa-triangle-exclamation fa-2x text-danger mb-3"></i>
+    <p class="text-danger mb-0">{{ error }}</p>
+  </div>
+
+  <!-- Empty state -->
+  <app-empty-state
+    *ngIf="!loading && !error && filteredAndSorted.length === 0"
+    [message]="emptyMessage"
+    [icon]="emptyIcon">
+  </app-empty-state>
+
+  <!-- Table -->
+  <div class="table-responsive" *ngIf="!loading && !error && filteredAndSorted.length > 0">
+    <table class="table table-hover align-middle admin-table">
+      <thead>
+        <tr>
+          <th *ngFor="let col of columns"
+              [style.width]="col.width"
+              [class.sortable]="col.sortable"
+              (click)="onSort(col)">
+            {{ col.label }}
+            <i class="fa-solid fa-sort-up ms-1" *ngIf="col.sortable && sortKey === col.key && sortDirection === 'asc'"></i>
+            <i class="fa-solid fa-sort-down ms-1" *ngIf="col.sortable && sortKey === col.key && sortDirection === 'desc'"></i>
+            <i class="fa-solid fa-sort ms-1 text-muted opacity-50" *ngIf="col.sortable && sortKey !== col.key"></i>
+          </th>
+          <th *ngIf="rowActionsTemplate" class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of pagedData; trackBy: trackByFn" (click)="rowClicked.emit(row)">
+          <td *ngFor="let col of columns">
+            <ng-container [ngSwitch]="col.type">
+
+              <span *ngSwitchCase="'badge'"
+                    class="badge"
+                    [ngClass]="(col.badgeMap && col.badgeMap[resolveValue(row, col.key)]) || 'bg-secondary'">
+                {{ resolveValue(row, col.key) }}
+              </span>
+
+              <span *ngSwitchCase="'boolean'"
+                    class="badge"
+                    [ngClass]="resolveValue(row, col.key) ? 'bg-success' : 'bg-secondary'">
+                {{ resolveValue(row, col.key) ? 'Yes' : 'No' }}
+              </span>
+
+              <span *ngSwitchCase="'date'">
+                {{ resolveValue(row, col.key) ? (resolveValue(row, col.key) | date:'mediumDate') : '—' }}
+              </span>
+
+              <span *ngSwitchCase="'currency'">
+                {{ resolveValue(row, col.key) | currency:'EGP ' }}
+              </span>
+
+              <span *ngSwitchDefault>
+                {{ resolveValue(row, col.key) ?? '—' }}
+              </span>
+
+            </ng-container>
+          </td>
+          <td *ngIf="rowActionsTemplate" class="text-end" (click)="$event.stopPropagation()">
+            <ng-container [ngTemplateOutlet]="rowActionsTemplate" [ngTemplateOutletContext]="{ $implicit: row }"></ng-container>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-3"
+       *ngIf="!loading && !error && filteredAndSorted.length > 0">
+    <span class="text-muted small">
+      Showing {{ rangeStart }}–{{ rangeEnd }} of {{ filteredAndSorted.length }}
+    </span>
+
+    <nav>
+      <ul class="pagination pagination-sm mb-0">
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <button class="page-link" (click)="goToPage(currentPage - 1)">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+        </li>
+        <li class="page-item" *ngFor="let p of pageNumbers" [class.active]="p === currentPage">
+          <button class="page-link" (click)="goToPage(p)">{{ p }}</button>
+        </li>
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <button class="page-link" (click)="goToPage(currentPage + 1)">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>

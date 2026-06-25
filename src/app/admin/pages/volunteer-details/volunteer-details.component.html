@@ -1,0 +1,64 @@
+<div class="page-head mb-4 d-flex align-items-center gap-3">
+  <button class="btn btn-outline-secondary btn-sm" routerLink="/admin/volunteers">
+    <i class="fa-solid fa-arrow-left"></i>
+  </button>
+  <div>
+    <h3 class="fw-bold mb-1">Volunteer Opportunity Details</h3>
+    <p class="text-muted mb-0">Review details and applicant statuses</p>
+  </div>
+</div>
+
+<app-loading-spinner *ngIf="loading()" message="Loading details..."></app-loading-spinner>
+
+<div *ngIf="!loading() && opportunity()" class="row g-4">
+  <div class="col-lg-4">
+    <div class="card-panel h-100">
+      <h5 class="fw-bold mb-3">Opportunity Info</h5>
+      <p><strong>Title:</strong> {{ opportunity()?.title }}</p>
+      <p><strong>Committee:</strong> {{ opportunity()?.committee }}</p>
+      <p><strong>Required:</strong> {{ opportunity()?.requiredCount }}</p>
+      <p><strong>Approved:</strong> {{ opportunity()?.currentApprovedCount }}</p>
+      <p><strong>Deadline:</strong> {{ opportunity()?.deadline | date:'mediumDate' }}</p>
+      <p><strong>Status:</strong> 
+        <span class="badge" [ngClass]="opportunity()?.isActive ? 'bg-success' : 'bg-danger'">
+          {{ opportunity()?.isActive ? 'Active' : 'Inactive' }}
+        </span>
+      </p>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="card-panel h-100">
+      <h5 class="fw-bold mb-4">Applicants <span class="badge bg-secondary ms-2">{{ applications().length }}</span></h5>
+
+      <app-loading-spinner *ngIf="applicationsLoading()" message="Loading applicants..."></app-loading-spinner>
+
+      <app-empty-state
+        *ngIf="!applicationsLoading() && applications().length === 0"
+        message="No applicants yet"
+        icon="fa-solid fa-user-clock">
+      </app-empty-state>
+
+      <div class="applicant-row d-flex align-items-center justify-content-between p-3 mb-3 border rounded bg-light" *ngFor="let app of applications()">
+        <div class="flex-grow-1 me-3">
+          <div class="d-flex align-items-center gap-2 mb-1">
+            <p class="mb-0 fw-medium">{{ app.studentFullName }}</p>
+            <span class="badge" [ngClass]="statusBadgeClass(app.status)">{{ app.status }}</span>
+          </div>
+          <p class="mb-0 text-muted small">{{ app.studentEmail }}</p>
+          <p class="mb-0 text-muted small"><strong>Skills:</strong> {{ app.skills || '—' }}</p>
+          <p class="mb-0 text-muted small"><strong>Motivation:</strong> {{ app.motivation || '—' }}</p>
+        </div>
+        <div class="d-flex gap-2" *ngIf="app.status === 'Pending'">
+          <button class="btn btn-sm btn-success" [disabled]="updatingApplicationId() === app.id" (click)="updateStatus(app, 'Approved')" title="Approve">
+            <i class="fa-solid fa-check"></i>
+          </button>
+          <button class="btn btn-sm btn-danger" [disabled]="updatingApplicationId() === app.id" (click)="updateStatus(app, 'Rejected')" title="Reject">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

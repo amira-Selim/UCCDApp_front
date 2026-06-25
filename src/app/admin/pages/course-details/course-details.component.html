@@ -1,0 +1,150 @@
+<div class="page-head mb-4 d-flex align-items-start justify-content-between flex-wrap gap-3">
+  <div class="d-flex align-items-center gap-3">
+    <button type="button" class="btn btn-outline-secondary btn-sm" (click)="goBack()">
+      <i class="fa-solid fa-arrow-left me-1"></i> Back to Courses
+    </button>
+    <div>
+      <h3 class="mb-1">{{ course()?.name || 'Course Details' }}</h3>
+      <p class="text-muted mb-0">Course information and enrolled students.</p>
+    </div>
+  </div>
+</div>
+
+<app-loading-spinner *ngIf="courseLoading()" message="Loading course details..."></app-loading-spinner>
+
+<div class="card-panel text-center py-5" *ngIf="!courseLoading() && courseError()">
+  <i class="fa-solid fa-triangle-exclamation fa-2x text-danger mb-3"></i>
+  <p class="text-danger mb-3">{{ courseError() }}</p>
+  <button type="button" class="btn btn-main" (click)="loadCourse()">
+    <i class="fa-solid fa-rotate-right me-1"></i> Retry
+  </button>
+</div>
+
+<ng-container *ngIf="!courseLoading() && !courseError() && course() as c">
+  <!-- Course Information -->
+  <div class="card-panel mb-4">
+    <p class="form-section-title">Course Information</p>
+
+    <div class="row g-4">
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="info-item">
+          <span class="info-label">Type</span>
+          <span class="badge" [ngClass]="typeBadgeMap[c.type] || 'bg-secondary'">{{ c.type }}</span>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="info-item">
+          <span class="info-label">Start Date</span>
+          <span class="info-value">{{ c.startDate ? (c.startDate | date:'mediumDate') : '—' }}</span>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="info-item">
+          <span class="info-label">Duration</span>
+          <span class="info-value">{{ c.duration }} {{ c.duration === 1 ? 'day' : 'days' }}</span>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="info-item">
+          <span class="info-label">Capacity</span>
+          <span class="info-value">{{ c.capacity }} seats</span>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="info-item">
+          <span class="info-label">Price</span>
+          <span class="info-value">{{ c.price | currency:'EGP ' }}</span>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="info-item">
+          <span class="info-label">Certification Fee</span>
+          <span class="info-value">{{ c.certificationFee | currency:'EGP ' }}</span>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="info-item">
+          <span class="info-label">Enrolled Students</span>
+          <span class="info-value">{{ students().length }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Enrolled Students -->
+  <div class="card-panel">
+    <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+      <p class="form-section-title mb-0">Enrolled Students</p>
+      <button type="button" class="btn btn-outline-secondary btn-sm" (click)="loadStudents()" [disabled]="studentsLoading()">
+        <i class="fa-solid fa-rotate-right me-1"></i> Refresh
+      </button>
+    </div>
+
+    <app-loading-spinner *ngIf="studentsLoading()" message="Loading enrolled students..."></app-loading-spinner>
+
+    <div class="card-panel text-center py-5" *ngIf="!studentsLoading() && studentsError()">
+      <i class="fa-solid fa-triangle-exclamation fa-2x text-danger mb-3"></i>
+      <p class="text-danger mb-0">{{ studentsError() }}</p>
+    </div>
+
+    <app-empty-state
+      *ngIf="!studentsLoading() && !studentsError() && students().length === 0"
+      icon="fa-solid fa-user-graduate"
+      message="No students enrolled in this course">
+    </app-empty-state>
+
+    <div class="table-responsive" *ngIf="!studentsLoading() && !studentsError() && students().length > 0">
+      <table class="table table-hover align-middle enrolled-table">
+        <thead>
+          <tr>
+            <th>Student Name</th>
+            <th>Email</th>
+            <th>Phone Number</th>
+            <th>Enrollment Date</th>
+            <th>Enrollment Status</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let s of students()">
+            <td class="fw-semibold">{{ s.fullName }}</td>
+            <td>{{ s.email }}</td>
+            <td>{{ s.phone || '—' }}</td>
+            <td>{{ s.enrollmentDate ? (s.enrollmentDate | date:'mediumDate') : '—' }}</td>
+            <td><app-status-badge [status]="statusLabel(s.status)"></app-status-badge></td>
+            <td class="text-end">
+              <button
+                *ngIf="canApprove(s.status)"
+                class="btn btn-sm btn-success me-1"
+                [disabled]="updatingStudentId() === s.studentId"
+                (click)="approve(s)">
+                <i class="fa-solid fa-check"></i> Approve
+              </button>
+              <button
+                *ngIf="canReject(s.status)"
+                class="btn btn-sm btn-outline-danger me-1"
+                [disabled]="updatingStudentId() === s.studentId"
+                (click)="reject(s)">
+                <i class="fa-solid fa-xmark"></i> Reject
+              </button>
+              <button
+                *ngIf="canComplete(s.status)"
+                class="btn btn-sm btn-outline-primary"
+                [disabled]="updatingStudentId() === s.studentId"
+                (click)="markCompleted(s)">
+                <i class="fa-solid fa-graduation-cap"></i> Mark Completed
+              </button>
+              <span class="text-muted small" *ngIf="!hasAnyAction(s.status)">—</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</ng-container>

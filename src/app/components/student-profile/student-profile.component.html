@@ -1,0 +1,425 @@
+@if (isLoading) {
+  <div class="min-vh-100 d-flex flex-column align-items-center justify-content-center bg-light">
+    <div class="spinner-border text-main mb-3" style="width: 3rem; height: 3rem;" role="status"></div>
+    <h5 class="text-muted">Loading your dashboard...</h5>
+  </div>
+} @else if (profileIncomplete) {
+  <div class="min-vh-100 d-flex align-items-center justify-content-center bg-light py-5">
+    <div class="premium-card border-0 p-5 text-center" style="max-width: 480px;">
+      <div class="bg-main-light text-main rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 72px; height: 72px;">
+        <i class="fa-solid" [ngClass]="isAnonymous ? 'fa-user-lock' : 'fa-id-card-clip'" style="font-size: 1.75rem;"></i>
+      </div>
+
+      @if (isAnonymous) {
+        <h4 class="fw-bold font-heading mb-2">Sign in to view your profile</h4>
+        <p class="text-muted mb-4">You need to be signed in to see your Student Profile, courses, and applications.</p>
+        <a [routerLink]="['/auth/login']" class="btn btn-main px-4 py-2 rounded-pill">
+          <i class="fa-solid fa-right-to-bracket me-2"></i> Sign In
+        </a>
+      } @else {
+        <h4 class="fw-bold font-heading mb-2">Finish setting up your profile</h4>
+        <p class="text-muted mb-4">
+          Just a couple more details (faculty, graduation year, gender &amp; national ID) and your Student Profile,
+          enrolled courses, and applications will be ready to view.
+        </p>
+        <a [routerLink]="['/profile']" class="btn btn-main px-4 py-2 rounded-pill">
+          <i class="fa-solid fa-arrow-right-to-bracket me-2"></i> {{ 'profile.completeProfile' | translate }}
+        </a>
+      }
+    </div>
+  </div>
+} @else {
+  <div class="profile-dashboard bg-light py-5 min-vh-100">
+    <div class="container">
+
+      @if (loadError) {
+        <div class="alert alert-danger d-flex align-items-center justify-content-between rounded-3 mb-4">
+          <span><i class="fa-solid fa-triangle-exclamation me-2"></i>We couldn't load your profile data. Please try again.</span>
+          <button class="btn btn-sm btn-outline-danger" (click)="retryAll()">Retry</button>
+        </div>
+      }
+
+      <!-- Profile Header Card -->
+      <div class="premium-card bg-main text-white p-4 mb-4 d-flex flex-wrap align-items-center gap-4 border-0">
+        <div class="avatar-circle bg-white text-main d-flex align-items-center justify-content-center fw-bold display-5 rounded-circle" style="width: 100px; height: 100px;">
+          {{ avatarLetter }}
+        </div>
+        <div class="flex-grow-1">
+          <span class="badge bg-white text-main rounded-pill px-3 mb-2 fw-medium">{{ 'profile.title' | translate }}</span>
+          <h2 class="mb-1 fw-bold">{{ studentData?.fullName || 'Student Name' }}</h2>
+          <p class="mb-0 opacity-75"><i class="fa-regular fa-envelope me-2"></i>{{ studentData?.email }}</p>
+        </div>
+        <div class="text-center px-3" *ngIf="studentData">
+          <div class="fs-3 fw-bold">{{ studentData.enrolledCoursesCount }}</div>
+          <small class="opacity-75">Enrolled Courses</small>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        <!-- Dashboard Navigation -->
+        <div class="col-lg-3">
+          <div class="premium-card p-3 border-0 sticky-top" style="top: 100px;">
+            <div class="nav flex-column nav-pills custom-tabs" role="tablist" aria-orientation="vertical">
+              <button class="nav-link text-start mb-2 fw-medium" [class.active]="activeTab === 'profile'" (click)="setTab('profile')">
+                <i class="fa-solid fa-id-badge me-2 w-20px text-center"></i> {{ 'profile.personalInfo' | translate }}
+              </button>
+              <button class="nav-link text-start mb-2 fw-medium" [class.active]="activeTab === 'courses'" (click)="setTab('courses')">
+                <i class="fa-solid fa-book-open me-2 w-20px text-center"></i> {{ 'profile.myCourses' | translate }}
+              </button>
+              <button class="nav-link text-start mb-2 fw-medium" [class.active]="activeTab === 'jobs'" (click)="setTab('jobs')">
+                <i class="fa-solid fa-briefcase me-2 w-20px text-center"></i> {{ 'profile.jobApplications' | translate }}
+              </button>
+              <button class="nav-link text-start mb-2 fw-medium" [class.active]="activeTab === 'volunteers'" (click)="setTab('volunteers')">
+                <i class="fa-solid fa-handshake-angle me-2 w-20px text-center"></i> {{ 'profile.volunteerWork' | translate }}
+              </button>
+              <button class="nav-link text-start fw-medium" [class.active]="activeTab === 'wishlist'" (click)="setTab('wishlist')">
+                <i class="fa-regular fa-heart me-2 w-20px text-center"></i> {{ 'profile.savedItems' | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div class="col-lg-9">
+          <div class="premium-card p-4 border-0 min-vh-50">
+
+            <!-- Tab: Profile Info -->
+            <div *ngIf="activeTab === 'profile'" class="animate-fade-in">
+
+              <!-- Basic Information (editable: name, phone, faculty, graduation year) -->
+              <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                <h4 class="fw-bold font-heading mb-0 text-dark">{{ 'profile.basicInfo' | translate }}</h4>
+                @if (!isEditingPersonal) {
+                  <button type="button" class="btn btn-sm btn-outline-main rounded-pill px-3" (click)="editPersonal()">
+                    <i class="fa-solid fa-pen me-1"></i> {{ 'common.edit' | translate }}
+                  </button>
+                }
+              </div>
+
+              <form [formGroup]="personalForm" (ngSubmit)="savePersonal()">
+                <div class="row g-4">
+
+                  <!-- Read-only: email -->
+                  <div class="col-md-6">
+                    <label class="form-label fw-medium small text-muted">{{ 'profile.email' | translate }}</label>
+                    <input type="email" class="form-control bg-light" [value]="studentData?.email" disabled readonly />
+                    <small class="text-muted">Email can't be changed here.</small>
+                  </div>
+
+                  <!-- Read-only: gender -->
+                  <div class="col-md-6">
+                    <label class="form-label fw-medium small text-muted">{{ 'profile.gender' | translate }}</label>
+                    <input type="text" class="form-control bg-light" [value]="studentData?.gender || '—'" disabled readonly />
+                  </div>
+
+                  <!-- Editable: first/last name -->
+                  <div class="col-md-6">
+                    <label class="form-label fw-medium small text-muted">{{ 'profile.firstName' | translate }}</label>
+                    <input type="text" class="form-control" formControlName="firstName" placeholder="e.g. Sara" />
+                    <div class="text-danger small mt-1" *ngIf="personalForm.get('firstName')?.touched && personalForm.get('firstName')?.invalid">
+                      First name is required.
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label fw-medium small text-muted">{{ 'profile.lastName' | translate }}</label>
+                    <input type="text" class="form-control" formControlName="lastName" placeholder="e.g. Ahmed" />
+                    <div class="text-danger small mt-1" *ngIf="personalForm.get('lastName')?.touched && personalForm.get('lastName')?.invalid">
+                      Last name is required.
+                    </div>
+                  </div>
+
+                  <!-- Editable: phone -->
+                  <div class="col-md-6">
+                    <label class="form-label fw-medium small text-muted">{{ 'profile.phone' | translate }}</label>
+                    <input type="tel" class="form-control" formControlName="phone" placeholder="e.g. 010xxxxxxxx" />
+                    <div class="text-danger small mt-1" *ngIf="personalForm.get('phone')?.touched && personalForm.get('phone')?.invalid">
+                      Please enter a valid phone number.
+                    </div>
+                  </div>
+
+                  <!-- Read-only: national ID -->
+                  <div class="col-md-6">
+                    <label class="form-label fw-medium small text-muted">{{ 'profile.nationalId' | translate }}</label>
+                    <input type="text" class="form-control bg-light" [value]="studentData?.nationalID || '—'" disabled readonly />
+                  </div>
+
+                  <!-- Editable: faculty -->
+                  <div class="col-md-6">
+                    <label class="form-label fw-medium small text-muted">{{ 'profile.faculty' | translate }}</label>
+                    <input type="text" class="form-control" formControlName="faculty" placeholder="e.g. Faculty of Computers & AI" />
+                    <div class="text-danger small mt-1" *ngIf="personalForm.get('faculty')?.touched && personalForm.get('faculty')?.invalid">
+                      Faculty is required.
+                    </div>
+                  </div>
+
+                  <!-- Editable: graduation year -->
+                  <div class="col-md-6">
+                    <label class="form-label fw-medium small text-muted">{{ 'profile.graduationYear' | translate }}</label>
+                    <input type="text" inputmode="numeric" maxlength="4" class="form-control" formControlName="graduationYear" placeholder="e.g. 2026" />
+                    <div class="text-danger small mt-1" *ngIf="personalForm.get('graduationYear')?.touched && personalForm.get('graduationYear')?.invalid">
+                      Please enter a valid 4-digit year.
+                    </div>
+                  </div>
+                </div>
+
+                @if (isEditingPersonal) {
+                  <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                    <button type="button" class="btn btn-light px-4 py-2" [disabled]="savingPersonal" (click)="cancelPersonal()">
+                      {{ 'common.cancel' | translate }}
+                    </button>
+                    <button type="submit" class="btn btn-main px-4 py-2" [disabled]="savingPersonal">
+                      @if (savingPersonal) {
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Saving...
+                      } @else {
+                        <span><i class="fa-solid fa-floppy-disk me-2"></i> {{ 'common.save' | translate }}</span>
+                      }
+                    </button>
+                  </div>
+                }
+              </form>
+
+              <!-- Professional / Optional Details -->
+              <div class="d-flex justify-content-between align-items-center mb-4 mt-5 border-bottom pb-3">
+                <div>
+                  <h4 class="fw-bold font-heading mb-1 text-dark">{{ 'profile.professionalDetails' | translate }}</h4>
+                  <small class="text-muted">Optional — add what's relevant, skip what isn't.</small>
+                </div>
+                @if (!isEditingProfessional) {
+                  <button type="button" class="btn btn-sm btn-outline-main rounded-pill px-3" (click)="editProfessional()">
+                    <i class="fa-solid fa-pen me-1"></i> {{ 'common.edit' | translate }}
+                  </button>
+                }
+              </div>
+
+              <form [formGroup]="professionalForm" (ngSubmit)="saveProfessional()">
+                <div class="row g-4">
+                  <div class="col-md-12">
+                    <label class="form-label fw-medium small text-muted">Education</label>
+                    <input type="text" class="form-control" formControlName="education" placeholder="e.g. B.Sc. Computer Science" />
+                    <small class="text-muted optional-hint" *ngIf="!isEditingProfessional && !studentData?.education">
+                      Not added yet — click Edit to add it.
+                    </small>
+                  </div>
+                  <div class="col-md-12">
+                    <label class="form-label fw-medium small text-muted">Skills</label>
+                    <textarea class="form-control" formControlName="skills" rows="3" placeholder="Enter your skills separated by commas"></textarea>
+                    <small class="text-muted optional-hint" *ngIf="!isEditingProfessional && !studentData?.skills">
+                      Not added yet — click Edit to add it.
+                    </small>
+                  </div>
+                  <div class="col-md-12">
+                    <label class="form-label fw-medium small text-muted">Interests</label>
+                    <textarea class="form-control" formControlName="interests" rows="2" placeholder="e.g. Web Development, Data Science, Volunteering"></textarea>
+                    <small class="text-muted optional-hint" *ngIf="!isEditingProfessional && !studentData?.interests">
+                      Not added yet — click Edit to add it.
+                    </small>
+                  </div>
+                  <div class="col-md-12">
+                    <label class="form-label fw-medium small text-muted">Career Goal</label>
+                    <textarea class="form-control" formControlName="careerGoal" rows="2" placeholder="e.g. Becoming a Backend Engineer"></textarea>
+                    <small class="text-muted optional-hint" *ngIf="!isEditingProfessional && !studentData?.careerGoal">
+                      Not added yet — click Edit to add it.
+                    </small>
+                  </div>
+                </div>
+
+                @if (isEditingProfessional) {
+                  <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                    <button type="button" class="btn btn-light px-4 py-2" [disabled]="savingProfessional" (click)="cancelProfessional()">
+                      {{ 'common.cancel' | translate }}
+                    </button>
+                    <button type="submit" class="btn btn-main px-4 py-2" [disabled]="savingProfessional">
+                      @if (savingProfessional) {
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Saving...
+                      } @else {
+                        <span><i class="fa-solid fa-floppy-disk me-2"></i> {{ 'common.save' | translate }}</span>
+                      }
+                    </button>
+                  </div>
+                }
+              </form>
+            </div>
+
+            <!-- Tab: Courses -->
+            <div *ngIf="activeTab === 'courses'" class="animate-fade-in">
+              <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                <h4 class="fw-bold font-heading mb-0 text-dark">{{ 'profile.enrolledCourses' | translate }}</h4>
+                <a routerLink="/courses" class="btn btn-sm btn-outline-main">Browse More Courses</a>
+              </div>
+
+              @if (coursesLoading) {
+                <div class="text-center py-4">
+                  <div class="spinner-border spinner-border-sm text-main" role="status"></div>
+                </div>
+              } @else if (coursesError) {
+                <div class="text-center py-4">
+                  <p class="text-danger mb-2">Couldn't load your enrolled courses.</p>
+                  <button class="btn btn-sm btn-outline-main" (click)="loadEnrolledCourses()">Retry</button>
+                </div>
+              } @else {
+                <div class="row g-3">
+                  <div class="col-12" *ngFor="let course of enrolledCourses">
+                    <div class="p-3 border rounded-3 bg-light d-flex flex-wrap justify-content-between align-items-center gap-2 transition-normal hover-lift">
+                      <div>
+                        <h6 class="fw-bold mb-1">{{ course.courseDetails?.name || 'Unknown Course' }}</h6>
+                        <small class="text-muted"><i class="fa-solid fa-hashtag me-1"></i> Course ID: {{ course.courseId }}</small>
+                      </div>
+                      <div class="text-end d-flex flex-column gap-2 align-items-end" style="min-width: 120px;">
+                        <span class="badge" [ngClass]="statusBadgeClass(course.status)">{{ statusLabel(course.status) }}</span>
+                        <button *ngIf="course.status === 'Pending'" class="btn btn-sm btn-outline-danger py-0 px-2" style="font-size: 0.75rem;" (click)="cancelCourse(course.courseId)">
+                          <i class="fa-solid fa-xmark me-1"></i> Cancel Request
+                        </button>
+                        <button *ngIf="course.status === 'Rejected'" class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 0.75rem;" (click)="cancelCourse(course.courseId)">
+                          <i class="fa-solid fa-trash-can me-1"></i> Remove
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div *ngIf="enrolledCourses.length === 0" class="text-center py-4">
+                    <i class="fa-solid fa-book-open fs-1 text-muted opacity-25 mb-3 d-block"></i>
+                    <p class="text-muted mb-3">You are not enrolled in any courses yet.</p>
+                    <button class="btn btn-main rounded-pill px-4" (click)="goToCourses()">Browse Courses</button>
+                  </div>
+                </div>
+              }
+            </div>
+
+            <!-- Tab: Jobs -->
+            <div *ngIf="activeTab === 'jobs'" class="animate-fade-in">
+              <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                <h4 class="fw-bold font-heading mb-0 text-dark">{{ 'profile.jobApplications' | translate }}</h4>
+                <a routerLink="/jobs" class="btn btn-sm btn-outline-main">Find Jobs</a>
+              </div>
+
+              @if (jobsLoading) {
+                <div class="text-center py-4">
+                  <div class="spinner-border spinner-border-sm text-main" role="status"></div>
+                </div>
+              } @else if (jobsError) {
+                <div class="text-center py-4">
+                  <p class="text-danger mb-2">Couldn't load your job applications.</p>
+                  <button class="btn btn-sm btn-outline-main" (click)="loadJobApplications()">Retry</button>
+                </div>
+              } @else {
+                <div class="table-responsive">
+                  <table class="table table-hover align-middle">
+                    <thead class="table-light text-muted small">
+                      <tr>
+                        <th>Company</th>
+                        <th>Position</th>
+                        <th>Applied On</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let job of jobApplications">
+                        <td class="fw-bold text-dark">{{ job.companyName || 'Unknown Company' }}</td>
+                        <td>{{ job.jobTitle || 'Unknown Position' }}</td>
+                        <td>{{ job.appliedAt | date:'mediumDate' }}</td>
+                        <td class="d-flex align-items-center gap-2">
+                          <span class="badge rounded-pill bg-info text-dark">Submitted</span>
+                          <button class="btn btn-sm btn-outline-danger py-0 px-2" style="font-size: 0.75rem;" (click)="cancelJob(job.id)">
+                            <i class="fa-solid fa-xmark me-1"></i> Withdraw
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <div *ngIf="jobApplications.length === 0" class="text-center py-4">
+                    <p class="text-muted mb-0">No job applications found.</p>
+                  </div>
+                </div>
+              }
+            </div>
+
+            <!-- Tab: Volunteers -->
+            <div *ngIf="activeTab === 'volunteers'" class="animate-fade-in">
+              <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                <h4 class="fw-bold font-heading mb-0 text-dark">{{ 'profile.volunteerWork' | translate }}</h4>
+                <a routerLink="/volunteering" class="btn btn-sm btn-outline-main">Explore Opportunities</a>
+              </div>
+
+              @if (volunteersLoading) {
+                <div class="text-center py-4">
+                  <div class="spinner-border spinner-border-sm text-main" role="status"></div>
+                </div>
+              } @else if (volunteersError) {
+                <div class="text-center py-4">
+                  <p class="text-danger mb-2">Couldn't load your volunteer applications.</p>
+                  <button class="btn btn-sm btn-outline-main" (click)="loadVolunteerApplications()">Retry</button>
+                </div>
+              } @else {
+                <div class="row g-3">
+                  <div class="col-12" *ngFor="let vol of volunteerWork">
+                    <div class="p-4 border rounded-3 bg-white shadow-sm d-flex justify-content-between align-items-center">
+                      <div class="d-flex align-items-center gap-3">
+                        <div class="bg-main-light text-main p-3 rounded-circle">
+                          <i class="fa-solid fa-hand-holding-heart fs-4"></i>
+                        </div>
+                        <div>
+                          <h6 class="fw-bold mb-1">{{ vol.opportunityTitle || 'Unknown Opportunity' }}</h6>
+                          <span class="text-muted small">Applied: {{ vol.appliedAt | date:'shortDate' }}</span>
+                        </div>
+                      </div>
+                      <div class="text-end d-flex flex-column gap-2 align-items-end">
+                        <span class="badge" [ngClass]="{
+                            'bg-warning text-dark': vol.status === 'Pending',
+                            'bg-success text-white': vol.status === 'Approved',
+                            'bg-danger text-white': vol.status === 'Rejected'
+                          }">{{ vol.status || 'Pending' }}</span>
+                        <button *ngIf="vol.status === 'Pending'" class="btn btn-sm btn-outline-danger py-0 px-2" style="font-size: 0.75rem;" (click)="cancelVolunteer(vol.id)">
+                          <i class="fa-solid fa-xmark me-1"></i> Cancel Request
+                        </button>
+                        <button *ngIf="vol.status === 'Rejected'" class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 0.75rem;" (click)="cancelVolunteer(vol.id)">
+                          <i class="fa-solid fa-trash-can me-1"></i> Remove
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div *ngIf="volunteerWork.length === 0" class="text-center py-4">
+                    <p class="text-muted mb-0">No volunteer applications found.</p>
+                  </div>
+                </div>
+              }
+            </div>
+
+            <!-- Tab: Wishlist -->
+            <div *ngIf="activeTab === 'wishlist'" class="animate-fade-in">
+              <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                <h4 class="fw-bold font-heading mb-0 text-dark">{{ 'profile.savedItems' | translate }}</h4>
+              </div>
+
+              @if (wishlistLoading) {
+                <div class="text-center py-4">
+                  <div class="spinner-border spinner-border-sm text-main" role="status"></div>
+                </div>
+              } @else if (wishlistError) {
+                <div class="text-center py-4">
+                  <p class="text-danger mb-2">Couldn't load your saved items.</p>
+                  <button class="btn btn-sm btn-outline-main" (click)="loadWishlist()">Retry</button>
+                </div>
+              } @else {
+                <div class="list-group list-group-flush">
+                  <div class="list-group-item d-flex justify-content-between align-items-center py-3 px-0 border-bottom" *ngFor="let item of wishlist">
+                    <div class="d-flex align-items-center gap-3">
+                      <span class="badge bg-primary">Course</span>
+                      <span class="fw-medium text-dark">{{ item.courseName || 'Unknown Course' }}</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                      <small class="text-muted d-none d-sm-block">Saved on {{ item.addedDate | date:'shortDate' }}</small>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="wishlist.length === 0" class="text-center py-5">
+                  <i class="fa-regular fa-heart fs-1 text-muted opacity-25 mb-3"></i>
+                  <h6 class="text-muted">Your wishlist is empty</h6>
+                </div>
+              }
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}
