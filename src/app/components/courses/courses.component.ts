@@ -237,11 +237,6 @@ export class CoursesComponent implements OnInit {
       this._router.navigate(['/auth/login'], { queryParams: { returnUrl: '/courses' } });
       return;
     }
-    
-    if (!this.auth.hasRole('Student')) {
-      this._notify.info('Only students can get AI recommendations. Please complete your profile.');
-      return;
-    }
 
     // Don't reset if already filled, allow user to adjust
     if (!this.aiField && !this.aiGoal) {
