@@ -1,8 +1,19 @@
 <section class="jobs-section min-vh-100 bg-light py-5">
   <!-- Header -->
-  <div class="container mb-5 text-center">
-    <h1 class="display-5 fw-bold text-dark font-heading mb-3">Job Opportunities</h1>
-    <p class="text-muted lead mx-auto" style="max-width: 600px;">Connect with top employers and find the perfect role to advance your career.</p>
+  <div class="container mb-5">
+    <div class="row align-items-end">
+      <div class="col-lg-6">
+        <h1 class="display-5 fw-bold text-dark font-heading mb-3">Job Opportunities</h1>
+        <p class="text-muted lead mb-0">Connect with top employers and find the perfect role to advance your career.</p>
+      </div>
+      <div class="col-lg-6">
+        <div class="d-flex flex-column flex-sm-row gap-3 mt-4 mt-lg-0 justify-content-lg-end">
+          <button *ngIf="auth.isLoggedIn() && auth.hasRole('Student')" class="btn btn-light text-main rounded-pill px-4 shadow-sm fw-bold d-flex align-items-center justify-content-center" (click)="toggleRecommendations()">
+            <i class="fa-solid fa-wand-magic-sparkles me-2"></i> {{ showRecommendations ? 'Hide Suggestions' : '✨ Suggest Jobs' }}
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="container">
@@ -37,10 +48,13 @@
       <div class="col-lg-9">
         
         <!-- AI Recommendations Section -->
-        <div class="mb-5" *ngIf="auth.isLoggedIn() && auth.hasRole('Student')">
-          <div class="d-flex align-items-center mb-4">
-            <h4 class="fw-bold text-dark font-heading mb-0"><i class="fa-solid fa-wand-magic-sparkles text-main me-2"></i> ✨ Recommended For You</h4>
-            <span class="badge bg-main-light text-main ms-3">AI Matches</span>
+        <div class="mb-5" *ngIf="auth.isLoggedIn() && auth.hasRole('Student') && showRecommendations">
+          <div class="d-flex align-items-center justify-content-between mb-4">
+            <div class="d-flex align-items-center">
+              <h4 class="fw-bold text-dark font-heading mb-0"><i class="fa-solid fa-wand-magic-sparkles text-main me-2"></i> ✨ Recommended For You</h4>
+              <span class="badge bg-main-light text-main ms-3">AI Matches</span>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary rounded-pill" (click)="toggleRecommendations()">Close</button>
           </div>
 
           <div *ngIf="isAiLoading" class="text-center py-5 bg-white rounded-4 border shadow-sm mb-4">
