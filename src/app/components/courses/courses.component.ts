@@ -32,12 +32,12 @@ export class CoursesComponent implements OnInit {
   recommendedCourses: Icources[] = [];
   enrolledCourseIds: Set<number> = new Set<number>();
   
-  // Filtering states
   searchTerm: string = '';
   selectedCategory: string = 'All';
   categories: string[] = ['All', 'Training', 'Advising', 'Workshop']; // Mock categories for UI
-
-  // Modal state
+  
+  // AI State
+  isAiLoading: boolean = false;
   selectedCourse: Icources | null = null;
   isModalOpen: boolean = false;
 
@@ -63,6 +63,8 @@ export class CoursesComponent implements OnInit {
         },
         error: () => this.fetchCourses()
       });
+      // Add 'Recommended' category for students
+      this.categories.push('Recommended');
     } else {
       this.fetchCourses();
     }
@@ -85,6 +87,19 @@ export class CoursesComponent implements OnInit {
   }
 
   applyFilters(): void {
+    if (this.selectedCategory === 'Recommended') {
+      let filtered = this.recommendedCourses;
+      if (this.searchTerm.trim() !== '') {
+        const term = this.searchTerm.toLowerCase();
+        filtered = filtered.filter(c => 
+          c.name.toLowerCase().includes(term) || 
+          (c.type && c.type.toLowerCase().includes(term))
+        );
+      }
+      this.filteredCourses = filtered;
+      return;
+    }
+
     let filtered = this.coursesList;
 
     if (this.selectedCategory !== 'All') {
@@ -106,7 +121,26 @@ export class CoursesComponent implements OnInit {
 
   setCategory(cat: string): void {
     this.selectedCategory = cat;
-    this.applyFilters();
+    
+    if (cat === 'Recommended' && this.recommendedCourses.length === 0 && !this.isAiLoading) {
+      this.isAiLoading = true;
+      this._aiService.getCourseRecommendations({ fieldOfInterest: '', careerGoal: '', currentLevel: 'Beginner' }).subscribe({
+        next: (res) => {
+          if (res.success && res.data) {
+            this.recommendedCourses = res.data;
+          }
+          this.isAiLoading = false;
+          this.applyFilters();
+        },
+        error: (err) => {
+          console.error('Failed to get course recommendations', err);
+          this.isAiLoading = false;
+          this.applyFilters();
+        }
+      });
+    } else {
+      this.applyFilters();
+    }
   }
 
   isWishlisted(courseId: number | undefined | null): boolean {
