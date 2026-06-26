@@ -232,6 +232,8 @@ export class CoursesComponent implements OnInit {
   }
 
   openAiModal(): void {
+    alert('Debug: openAiModal executing!');
+    console.log('openAiModal called');
     if (!this.auth.isLoggedIn()) {
       this._notify.info('Please sign in to get recommendations.');
       this._router.navigate(['/auth/login'], { queryParams: { returnUrl: '/courses' } });
@@ -246,6 +248,9 @@ export class CoursesComponent implements OnInit {
     }
     this.showAiResults = false;
     this.isAiModalOpen = true;
+    
+    // Debug
+    console.log('isAiModalOpen set to:', this.isAiModalOpen);
   }
 
   closeAiModal(): void {
