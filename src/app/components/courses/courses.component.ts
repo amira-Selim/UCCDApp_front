@@ -72,6 +72,20 @@ export class CoursesComponent implements OnInit {
     // Loads the student's wishlist once so every heart icon on this page
     // renders in the correct state immediately (red if already saved).
     this.wishlistState.ensureLoaded();
+
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const cachedAi = localStorage.getItem('cachedAiRecommendations');
+      if (cachedAi) {
+        try {
+          this.recommendedCourses = JSON.parse(cachedAi);
+          this.aiField = localStorage.getItem('cachedAiField') || '';
+          this.aiGoal = localStorage.getItem('cachedAiGoal') || '';
+          this.aiLevel = localStorage.getItem('cachedAiLevel') || 'Beginner';
+        } catch (e) {
+          console.error('Failed to load cached AI recommendations', e);
+        }
+      }
+    }
   }
 
   fetchCourses(): void {
@@ -264,6 +278,14 @@ export class CoursesComponent implements OnInit {
       next: (res) => {
         if (res.success && res.data) {
           this.recommendedCourses = res.data;
+          
+          if (typeof window !== 'undefined' && window.localStorage) {
+            localStorage.setItem('cachedAiRecommendations', JSON.stringify(res.data));
+            localStorage.setItem('cachedAiField', this.aiField);
+            localStorage.setItem('cachedAiGoal', this.aiGoal);
+            localStorage.setItem('cachedAiLevel', this.aiLevel);
+          }
+
           this.isAiModalOpen = false; // Close modal
           this.setCategory('Recommended'); // Switch category to show results
         }
