@@ -267,6 +267,8 @@ export class CoursesComponent implements OnInit {
   }
 
   submitAiForm(): void {
+    if (this.isGeneratingAi || !this.aiField || !this.aiGoal) return;
+    
     this.isGeneratingAi = true;
     const request = {
       fieldOfInterest: this.aiField,

@@ -242,12 +242,12 @@
           
           <div class="mb-4">
             <label class="form-label fw-bold text-dark">1. What field or topic are you most interested in?</label>
-            <input type="text" class="form-control form-control-lg bg-light border-0" placeholder="e.g. Frontend Web Development, Machine Learning..." [(ngModel)]="aiField">
+            <input type="text" class="form-control form-control-lg bg-light border-0" placeholder="e.g. Frontend Web Development, Machine Learning..." [(ngModel)]="aiField" (keyup.enter)="submitAiForm()">
           </div>
 
           <div class="mb-4">
             <label class="form-label fw-bold text-dark">2. What is your primary career goal?</label>
-            <input type="text" class="form-control form-control-lg bg-light border-0" placeholder="e.g. Build a strong portfolio, get an internship..." [(ngModel)]="aiGoal">
+            <input type="text" class="form-control form-control-lg bg-light border-0" placeholder="e.g. Build a strong portfolio, get an internship..." [(ngModel)]="aiGoal" (keyup.enter)="submitAiForm()">
           </div>
 
           <div class="mb-4">
