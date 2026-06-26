@@ -121,10 +121,17 @@
           } @empty {
             <div class="col-12">
               <div class="text-center py-5 bg-white rounded-4 border">
-                <i class="fa-solid fa-book-open fs-1 text-muted opacity-25 mb-3"></i>
-                <h5 class="fw-bold text-dark mb-1">No courses found</h5>
-                <p class="text-muted">Try adjusting your filters or search term.</p>
-                <button class="btn btn-outline-main rounded-pill px-4 mt-2" (click)="searchTerm = ''; selectedCategory = 'All'; applyFilters()">Clear Filters</button>
+                @if (selectedCategory === 'Recommended') {
+                  <i class="fa-solid fa-robot fs-1 text-main opacity-50 mb-3"></i>
+                  <h5 class="fw-bold text-dark mb-1">No matches found</h5>
+                  <p class="text-muted">We couldn't find courses matching your exact AI criteria right now.</p>
+                  <button class="btn btn-main rounded-pill px-4 mt-2" (click)="openAiModal()">Update AI Survey</button>
+                } @else {
+                  <i class="fa-solid fa-book-open fs-1 text-muted opacity-25 mb-3"></i>
+                  <h5 class="fw-bold text-dark mb-1">No courses found</h5>
+                  <p class="text-muted">Try adjusting your filters or search term.</p>
+                  <button class="btn btn-outline-main rounded-pill px-4 mt-2" (click)="searchTerm = ''; selectedCategory = 'All'; applyFilters()">Clear Filters</button>
+                }
               </div>
             </div>
           }
