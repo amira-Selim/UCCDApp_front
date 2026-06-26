@@ -1,8 +1,8 @@
 {
   "outputDirectory": "docs/browser",
   "rewrites": [
-    { "source": "/api/:match*", "destination": "http://uccdapp.runasp.net/api/:match*" },
-    { "source": "/hubs/:match*", "destination": "http://uccdapp.runasp.net/hubs/:match*" },
+    { "source": "/api/:match*", "destination": "https://uccdapp.runasp.net/api/:match*" },
+    { "source": "/hubs/:match*", "destination": "https://uccdapp.runasp.net/hubs/:match*" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
