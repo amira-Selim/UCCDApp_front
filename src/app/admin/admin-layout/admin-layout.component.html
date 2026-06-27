@@ -18,7 +18,7 @@
       </a>
     </nav>
 
-    <div class="sidebar-footer">
+    <div class="sidebar-footer" *ngIf="auth.isAdmin()">
       <a routerLink="/home" class="sidebar-link">
         <i class="fa-solid fa-arrow-left"></i>
         <span *ngIf="!sidebarCollapsed()">Back to site</span>
@@ -89,7 +89,7 @@
           <ul class="dropdown-menu dropdown-menu-end">
             <li><span class="dropdown-item-text text-muted small">{{ auth.currentUser()?.email }}</span></li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" routerLink="/home"><i class="fa-solid fa-house me-2"></i>{{ 'admin.visitSite' | translate }}</a></li>
+            <li *ngIf="auth.isAdmin()"><a class="dropdown-item" routerLink="/home"><i class="fa-solid fa-house me-2"></i>{{ 'admin.visitSite' | translate }}</a></li>
             <li><button class="dropdown-item text-danger" (click)="logout()"><i class="fa-solid fa-right-from-bracket me-2"></i>{{ 'admin.logout' | translate }}</button></li>
           </ul>
         </div>
