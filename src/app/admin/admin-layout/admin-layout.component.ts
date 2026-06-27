@@ -38,16 +38,10 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
 
   private signalRSub?: Subscription;
 
-  readonly navItems: AdminNavItem[] = [
-    { label: 'admin.dashboard', icon: 'fa-solid fa-gauge-high', link: '/admin/dashboard' },
-    { label: 'admin.students', icon: 'fa-solid fa-user-graduate', link: '/admin/students' },
-    { label: 'admin.courses', icon: 'fa-solid fa-book', link: '/admin/courses' },
-    { label: 'admin.jobs', icon: 'fa-solid fa-briefcase', link: '/admin/jobs' },
-    { label: 'admin.volunteering', icon: 'fa-solid fa-handshake-angle', link: '/admin/volunteers' },
-    { label: 'admin.messages', icon: 'fa-solid fa-envelope', link: '/admin/messages' },
-  ];
+  navItems: AdminNavItem[] = [];
 
   ngOnInit() {
+    this.setupNavItems();
     this.loadNotifications();
     this._signalR.startConnection();
     if (!this.signalRSub) {
@@ -55,6 +49,23 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
         this.notifications.unshift(notif);
         this.unreadCount++;
       });
+    }
+  }
+
+  setupNavItems() {
+    if (this.auth.isAdmin()) {
+      this.navItems = [
+        { label: 'admin.dashboard', icon: 'fa-solid fa-gauge-high', link: '/admin/dashboard' },
+        { label: 'admin.students', icon: 'fa-solid fa-user-graduate', link: '/admin/students' },
+        { label: 'admin.courses', icon: 'fa-solid fa-book', link: '/admin/courses' },
+        { label: 'admin.jobs', icon: 'fa-solid fa-briefcase', link: '/admin/jobs' },
+        { label: 'admin.volunteering', icon: 'fa-solid fa-handshake-angle', link: '/admin/volunteers' },
+        { label: 'admin.messages', icon: 'fa-solid fa-envelope', link: '/admin/messages' },
+      ];
+    } else if (this.auth.isCompany()) {
+      this.navItems = [
+        { label: 'Company Jobs', icon: 'fa-solid fa-briefcase', link: '/admin/jobs' }
+      ];
     }
   }
 

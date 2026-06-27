@@ -3,6 +3,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { JobsAdminService } from '../../../core/services/admin/jobs-admin.service';
+import { AuthServiceService } from '../../../core/services/auth.service';
 import { IJobApplication, IJobOpportunity } from '../../../core/interfaces/job.model';
 import { DataTableComponent } from '../../../shared/components/data-table/data-table.component';
 import { TableColumn } from '../../../shared/components/data-table/table-column.model';
@@ -23,6 +24,7 @@ export class JobsListComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  public readonly auth = inject(AuthServiceService);
 
   jobs = signal<IJobOpportunity[]>([]);
   jobTypes: string[] = ['FullTime', 'PartTime', 'Internship', 'Freelance'];
@@ -63,7 +65,10 @@ export class JobsListComponent implements OnInit {
   loadJobs(): void {
     this.loading.set(true);
     this.error.set(null);
-    this.jobsService.getAllForAdmin().subscribe({
+    
+    const obs$ = this.auth.isCompany() ? this.jobsService.getCompanyJobs() : this.jobsService.getAllForAdmin();
+    
+    obs$.subscribe({
       next: (res) => {
         this.jobs.set(res.data ?? []);
         this.loading.set(false);
@@ -78,6 +83,14 @@ export class JobsListComponent implements OnInit {
 
   openCreateForm(): void {
     this.jobForm.reset();
+    if (this.auth.isCompany()) {
+      // Auto-fill company details for logged in company
+      const currentUser = this.auth.currentUser();
+      this.jobForm.patchValue({
+        companyName: currentUser?.fullName || '',
+        companyEmail: currentUser?.email || ''
+      });
+    }
     this.showForm.set(true);
   }
 
@@ -94,7 +107,7 @@ export class JobsListComponent implements OnInit {
     this.saving.set(true);
     const value = this.jobForm.getRawValue();
 
-    this.jobsService.create({
+    const createDto = {
       title: value.title!,
       companyName: value.companyName!,
       companyEmail: value.companyEmail!,
@@ -105,7 +118,11 @@ export class JobsListComponent implements OnInit {
       salaryRange: value.salaryRange ? Number(value.salaryRange) : null,
       targetFaculty: value.targetFaculty!,
       deadline: value.deadline ? new Date(value.deadline as string).toISOString() : null,
-    }).subscribe({
+    };
+
+    const createObs$ = this.auth.isCompany() ? this.jobsService.createByCompany(createDto) : this.jobsService.create(createDto);
+
+    createObs$.subscribe({
       next: () => {
         this.notify.success('Job opportunity created successfully.');
         this.saving.set(false);

@@ -48,12 +48,12 @@
       <div class="row g-3">
         <div class="col-sm-6">
           <label class="form-label">Company Name</label>
-          <input type="text" class="form-control" formControlName="companyName" [class.is-invalid]="isInvalid('companyName')" />
+          <input type="text" class="form-control" formControlName="companyName" [class.is-invalid]="isInvalid('companyName')" [readonly]="auth.isCompany()" />
           <div class="invalid-feedback invalid-feedback-block" *ngIf="isInvalid('companyName')">Company name is required.</div>
         </div>
         <div class="col-sm-6">
           <label class="form-label">Company Email</label>
-          <input type="email" class="form-control" formControlName="companyEmail" [class.is-invalid]="isInvalid('companyEmail')" />
+          <input type="email" class="form-control" formControlName="companyEmail" [class.is-invalid]="isInvalid('companyEmail')" [readonly]="auth.isCompany()" />
           <div class="invalid-feedback invalid-feedback-block" *ngIf="isInvalid('companyEmail')">A valid email is required.</div>
         </div>
       </div>

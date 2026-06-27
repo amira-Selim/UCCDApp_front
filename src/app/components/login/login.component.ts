@@ -60,15 +60,19 @@ export class LoginComponent {
           // right away, instead of only writing localStorage - otherwise
           // the isAdmin()/hasRole() check just below would still see the
           // previous (anonymous) signal value until a manual refresh.
-          this._AuthServiceService.persistSession(res.data.token, res.data.fullName);
+          this._AuthServiceService.persistSession(res.data.token, res.data.fullName, res.data.requirePasswordChange);
 
-          const returnUrl = this._route.snapshot.queryParamMap.get('returnUrl');
-          if (returnUrl) {
-            this._router.navigateByUrl(returnUrl);
-          } else if (this._AuthServiceService.isAdmin()) {
-            this._router.navigate(['/admin/dashboard']);
+          if (res.data.requirePasswordChange) {
+            this._router.navigate(['/auth/change-password']);
           } else {
-            this._router.navigate(['/home']);
+            const returnUrl = this._route.snapshot.queryParamMap.get('returnUrl');
+            if (returnUrl) {
+              this._router.navigateByUrl(returnUrl);
+            } else if (this._AuthServiceService.isAdmin()) {
+              this._router.navigate(['/admin/dashboard']);
+            } else {
+              this._router.navigate(['/home']);
+            }
           }
         }
           this.isLoading=false;

@@ -19,7 +19,7 @@ export const adminGuard: CanActivateFn & CanMatchFn = () => {
     return false;
   }
 
-  if (!auth.isAdmin()) {
+  if (!auth.isAdmin() && !auth.isCompany()) {
     router.navigate(['/unauthorized']);
     return false;
   }

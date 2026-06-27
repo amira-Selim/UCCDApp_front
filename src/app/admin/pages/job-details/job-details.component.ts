@@ -6,6 +6,8 @@ import { NotificationService } from '../../../core/services/notification.service
 import { IJobOpportunity, IJobApplication } from '../../../core/interfaces/job.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-job-details',
@@ -25,6 +27,11 @@ export class JobDetailsComponent implements OnInit {
   job = signal<IJobOpportunity | null>(null);
   applications = signal<IJobApplication[]>([]);
 
+  private http = inject(HttpClient);
+  selectedProfile = signal<any>(null);
+  profileLoading = signal(false);
+  showProfileModal = signal(false);
+
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
@@ -34,10 +41,9 @@ export class JobDetailsComponent implements OnInit {
   }
 
   loadJobDetails(id: number): void {
-    this.jobsService.getAllForAdmin().subscribe({
+    this.jobsService.getJobById(id).subscribe({
       next: (res) => {
-        const found = res.data?.find(j => j.id === id);
-        this.job.set(found || null);
+        this.job.set(res.data || null);
         this.loading.set(false);
       },
       error: () => {
@@ -58,5 +64,25 @@ export class JobDetailsComponent implements OnInit {
         this.applicationsLoading.set(false);
       }
     });
+  }
+
+  viewApplicantProfile(studentId: number): void {
+    this.selectedProfile.set(null);
+    this.showProfileModal.set(true);
+    this.profileLoading.set(true);
+    this.http.get(`${environment.baseUrl}/api/Profile/applicant/${studentId}`).subscribe({
+      next: (res: any) => {
+        this.selectedProfile.set(res.data);
+        this.profileLoading.set(false);
+      },
+      error: () => {
+        this.notify.error('Failed to load applicant profile.');
+        this.profileLoading.set(false);
+      }
+    });
+  }
+
+  closeProfileModal(): void {
+    this.showProfileModal.set(false);
   }
 }

@@ -10,6 +10,7 @@ export interface CurrentUser {
   fullName: string;
   email: string;
   roles: string[];
+  requirePasswordChange?: boolean;
 }
 
 @Injectable({
@@ -34,7 +35,7 @@ export class AuthServiceService {
     return this._HttpClient.post(`${environment.baseUrl}/api/Account/login`, data).pipe(
       tap((res: any) => {
         if (res?.success && res?.data?.token) {
-          this.persistSession(res.data.token, res.data.fullName);
+          this.persistSession(res.data.token, res.data.fullName, res.data.requirePasswordChange);
         }
       })
     );
@@ -49,20 +50,22 @@ export class AuthServiceService {
   }
 
   /** Persists the JWT + derived user info to localStorage (browser only) and updates the signal. */
-  persistSession(token: string, fullName?: string): void {
+  persistSession(token: string, fullName?: string, requirePasswordChange: boolean = false): void {
     if (isPlatformBrowser(this._platformId)) {
       localStorage.setItem('userToken', token);
       if (fullName) {
         localStorage.setItem('fullName', fullName);
       }
+      localStorage.setItem('requirePasswordChange', requirePasswordChange ? 'true' : 'false');
     }
-    this.currentUser.set(this.buildCurrentUser(token, fullName));
+    this.currentUser.set(this.buildCurrentUser(token, fullName, requirePasswordChange));
   }
 
   logout(): void {
     if (isPlatformBrowser(this._platformId)) {
       localStorage.removeItem('userToken');
       localStorage.removeItem('fullName');
+      localStorage.removeItem('requirePasswordChange');
     }
     this.currentUser.set(null);
     this._router.navigate(['/auth/login']);
@@ -89,20 +92,31 @@ export class AuthServiceService {
     return this.hasRole('Admin');
   }
 
-  private buildCurrentUser(token: string, fullNameFallback?: string): CurrentUser | null {
+  isCompany(): boolean {
+    return this.hasRole('Company');
+  }
+
+  changePassword(data: object): Observable<any> {
+    return this._HttpClient.post(`${environment.baseUrl}/api/Account/change-password`, data);
+  }
+
+  private buildCurrentUser(token: string, fullNameFallback?: string, requirePasswordChange: boolean = false): CurrentUser | null {
     const decoded = decodeJwt(token);
     if (!decoded) return null;
     return {
       fullName: decoded.fullName || fullNameFallback || 'User',
       email: decoded.email || '',
-      roles: decoded.roles || []
+      roles: decoded.roles || [],
+      requirePasswordChange: requirePasswordChange
     };
   }
 
   private readUserFromStorage(): CurrentUser | null {
     const token = this.getLocalStorage('userToken');
     if (!token || isTokenExpired(token)) return null;
-    return this.buildCurrentUser(token, this.getLocalStorage('fullName') || undefined);
+    const reqPwChangeStr = this.getLocalStorage('requirePasswordChange');
+    const reqPwChange = reqPwChangeStr === 'true';
+    return this.buildCurrentUser(token, this.getLocalStorage('fullName') || undefined, reqPwChange);
   }
 
   //////for the local storage
