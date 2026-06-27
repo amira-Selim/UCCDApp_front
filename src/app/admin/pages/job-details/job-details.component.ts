@@ -7,7 +7,7 @@ import { IJobOpportunity, IJobApplication } from '../../../core/interfaces/job.m
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../../environments/environment';
+import { environment } from '../../../core/environments/environment';
 
 @Component({
   selector: 'app-job-details',
