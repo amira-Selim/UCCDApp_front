@@ -114,6 +114,8 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
       } else {
         this.router.navigate(['/admin/jobs']);
       }
+    } else if (notif.title?.includes('Job Rejected') || notif.title?.includes('Job Deleted') || notif.title?.includes('Job Approved')) {
+      this.router.navigate(['/admin/notifications']);
     }
   }
 

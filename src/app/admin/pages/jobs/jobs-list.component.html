@@ -144,7 +144,7 @@
       <div class="modal-body">
         <div class="mb-3">
           <label class="form-label">Reason for Deactivation/Rejection</label>
-          <textarea class="form-control" rows="3" [formControl]="deactivateReasonCtrl" placeholder="e.g. Position filled, Invalid details..."></textarea>
+          <textarea class="form-control" rows="3" [formControl]="deactivateReasonCtrl" placeholder="e.g. Position filled, Invalid details..." (keydown.enter)="$event.preventDefault(); submitDeactivation()"></textarea>
           <div class="text-danger small mt-1" *ngIf="deactivateReasonCtrl.invalid && deactivateReasonCtrl.touched">
             Reason is required.
           </div>
@@ -159,7 +159,7 @@
 </div>
 
 <!-- Delete Modal -->
-<div class="modal fade show" style="display: block; background: rgba(0,0,0,0.5);" *ngIf="showDeleteModal()">
+<div class="modal fade show" style="display: block; background: rgba(0,0,0,0.5);" *ngIf="showDeleteModal()" (window:keydown.enter)="submitDelete()">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
