@@ -1,0 +1,170 @@
+.about-container {
+  overflow-x: hidden;
+}
+
+.section-title {
+  font-weight: 700;
+  color: #2c3e50;
+  position: relative;
+  display: inline-block;
+  padding-bottom: 10px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #3498db, #2ecc71);
+    border-radius: 3px;
+  }
+}
+
+// Hero Section
+.hero-section {
+  position: relative;
+  height: 60vh;
+  min-height: 400px;
+  background-image: url('../../../assets/images/team\ 1.jpg');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+
+  .hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(44, 62, 80, 0.8) 0%, rgba(52, 152, 219, 0.6) 100%);
+    z-index: 1;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 0 20px;
+  }
+}
+
+// Counter Section
+.counter-section {
+  background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+  
+  .counter-box {
+    padding: 30px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    transition: transform 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    &:hover {
+      transform: translateY(-10px);
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    i {
+      color: #f1c40f;
+    }
+  }
+}
+
+// Services Cards
+.service-card {
+  background: white;
+  padding: 40px 30px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  height: 100%;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 0;
+    background: linear-gradient(135deg, #3498db, #2ecc71);
+    transition: all 0.4s ease;
+    z-index: -1;
+    border-radius: 15px;
+  }
+
+  &:hover {
+    transform: translateY(-15px);
+    box-shadow: 0 15px 40px rgba(52, 152, 219, 0.2);
+    color: white;
+
+    &::before {
+      height: 100%;
+    }
+
+    .icon-wrapper i {
+      color: white;
+      transform: scale(1.1);
+    }
+    
+    p {
+      color: rgba(255, 255, 255, 0.9);
+    }
+  }
+
+  .icon-wrapper {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    background: rgba(52, 152, 219, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.4s ease;
+
+    i {
+      font-size: 2rem;
+      color: #3498db;
+      transition: all 0.4s ease;
+    }
+  }
+
+  h4 {
+    font-weight: 600;
+    margin-bottom: 15px;
+  }
+
+  p {
+    color: #6c757d;
+    margin-bottom: 0;
+    transition: color 0.4s ease;
+  }
+}
+
+// Company specific styling
+.company-card {
+  &::before {
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+  }
+
+  &:hover {
+    box-shadow: 0 15px 40px rgba(44, 62, 80, 0.2);
+  }
+
+  .icon-wrapper {
+    background: rgba(44, 62, 80, 0.1);
+    i {
+      color: #2c3e50;
+    }
+  }
+}
