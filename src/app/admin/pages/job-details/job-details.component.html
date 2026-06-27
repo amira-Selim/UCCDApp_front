@@ -38,11 +38,14 @@
 
       <div class="applicant-row d-flex align-items-center justify-content-between p-3 mb-3 border rounded bg-light" *ngFor="let app of applications()">
         <div>
-          <a href="#" (click)="$event.preventDefault(); viewApplicantProfile(app.studentId)" class="mb-0 fw-medium text-decoration-none text-primary">{{ app.studentFullName }}</a>
+          <h6 class="mb-0 fw-medium text-dark">{{ app.studentFullName }}</h6>
           <p class="mb-0 text-muted small">{{ app.studentEmail }} · {{ app.studentFaculty }}</p>
           <p class="mb-0 text-muted small">Applied {{ app.appliedAt | date:'medium' }}</p>
         </div>
-        <div class="d-flex gap-2">
+        <div class="d-flex flex-wrap gap-2">
+          <button (click)="viewApplicantProfile(app.studentId)" class="btn btn-sm btn-outline-info">
+            <i class="fa-solid fa-user me-1"></i> Profile
+          </button>
           <a [href]="'mailto:' + app.studentEmail" class="btn btn-sm btn-outline-secondary">
             <i class="fa-solid fa-envelope me-1"></i> Email
           </a>
