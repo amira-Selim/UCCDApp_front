@@ -39,5 +39,6 @@ export interface IJobApplication {
   studentEmail: string;
   studentFaculty: string;
   cvFilePath: string;
+  coverLetter?: string | null;
   appliedAt: string;
 }

@@ -8,6 +8,7 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../core/environments/environment';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-job-details',
@@ -91,5 +92,18 @@ export class JobDetailsComponent implements OnInit {
     if (path.startsWith('http')) return path;
     if (path.startsWith('/')) return `${environment.baseUrl}${path}`;
     return `${environment.baseUrl}/${path}`;
+  }
+
+  viewCoverLetter(letter?: string | null): void {
+    if (!letter) {
+      Swal.fire('No Cover Letter', 'The applicant did not provide a cover letter.', 'info');
+      return;
+    }
+    Swal.fire({
+      title: 'Cover Letter',
+      text: letter,
+      icon: 'info',
+      confirmButtonText: 'Close'
+    });
   }
 }
