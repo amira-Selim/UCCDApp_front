@@ -6,6 +6,7 @@
  * to so they're easy to find and extend.
  */
 export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
+  'nav.about': { en: 'About Us', ar: 'من نحن' },
   // ---------------- common / shared ----------------
   'common.save': { en: 'Save Changes', ar: 'حفظ التغييرات' },
   'common.cancel': { en: 'Cancel', ar: 'إلغاء' },
