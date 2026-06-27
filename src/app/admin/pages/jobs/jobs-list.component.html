@@ -17,6 +17,7 @@
     searchPlaceholder="Search by title, company or faculty..."
     emptyMessage="No job opportunities found"
     emptyIcon="fa-solid fa-briefcase">
+    <ng-template #rowActions let-row>
       <!-- Common Actions -->
       <button class="btn btn-sm btn-outline-primary position-relative" (click)="viewApplications(row)" title="View Applicants">
         <i class="fa-solid fa-users"></i>
