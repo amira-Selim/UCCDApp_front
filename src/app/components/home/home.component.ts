@@ -1,8 +1,9 @@
-import { Component, HostListener, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, HostListener, inject, OnInit, PLATFORM_ID, Inject, AfterViewInit } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { CarouselModule, OwlOptions } from 'ngx-owl-carousel-o';
 import { RouterLink } from '@angular/router';
 import { AuthServiceService } from '../../core/services/auth.service';
+import * as AOS from 'aos';
 
 @Component({
   selector: 'app-home',
@@ -11,9 +12,62 @@ import { AuthServiceService } from '../../core/services/auth.service';
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit, AfterViewInit {
 
   _authService = inject(AuthServiceService);
+
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) { }
+
+  ngOnInit(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      AOS.init({
+        duration: 800,
+        once: true,
+        offset: 50
+      });
+    }
+  }
+
+  ngAfterViewInit(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      this.animateCounters();
+    }
+  }
+
+  private animateCounters(): void {
+    const counters = document.querySelectorAll('.count-num');
+    const speed = 200; // The lower the slower
+
+    counters.forEach((counter: any) => {
+      const updateCount = () => {
+        const target = +counter.getAttribute('data-target');
+        const count = +counter.innerText;
+        
+        // Lower inc to slow and higher to fast
+        const inc = target / speed;
+
+        // Check if target is reached
+        if (count < target) {
+          // Add inc to count and output in counter
+          counter.innerText = Math.ceil(count + inc);
+          // Call function every ms
+          setTimeout(updateCount, 15);
+        } else {
+          counter.innerText = target;
+        }
+      };
+
+      // Use IntersectionObserver to start animation when visible
+      const observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          updateCount();
+          observer.disconnect();
+        }
+      }, { threshold: 0.5 });
+
+      observer.observe(counter);
+    });
+  }
 
   customOptionsTop: OwlOptions = {
     loop: true,
@@ -24,7 +78,7 @@ export class HomeComponent {
     touchDrag: true,
     pullDrag: true,
     dots: true,
-    navSpeed: 700,
+    navSpeed: 1000,
     items: 1,
     responsiveRefreshRate: 0, 
     nav: false,
