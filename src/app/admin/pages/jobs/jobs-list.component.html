@@ -17,7 +17,7 @@
     searchPlaceholder="Search by title, company or faculty..."
     emptyMessage="No job opportunities found"
     emptyIcon="fa-solid fa-briefcase">
-    <ng-template #rowActions let-row>
+      <!-- Common Actions -->
       <button class="btn btn-sm btn-outline-primary position-relative" (click)="viewApplications(row)" title="View Applicants">
         <i class="fa-solid fa-users"></i>
         <span *ngIf="row.totalApplicants > 0" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
@@ -25,9 +25,24 @@
           <span class="visually-hidden">applicants</span>
         </span>
       </button>
-      <button class="btn btn-sm btn-outline-danger ms-2" *ngIf="row.status === 2" [title]="'Rejection Reason: ' + row.rejectionReason">
+
+      <!-- Rejection Info -->
+      <button class="btn btn-sm btn-outline-danger ms-2" *ngIf="row.status === 2 && auth.isCompany()" [title]="'Rejection Reason: ' + row.rejectionReason">
         <i class="fa-solid fa-circle-info"></i>
       </button>
+
+      <!-- Admin Only Actions -->
+      <ng-container *ngIf="auth.isAdmin()">
+        <button class="btn btn-sm btn-outline-success ms-2" *ngIf="row.status !== 1" (click)="approveJob(row.id)" title="Approve Job">
+          <i class="fa-solid fa-check"></i>
+        </button>
+        <button class="btn btn-sm btn-outline-warning ms-2" *ngIf="row.status === 1" (click)="openDeactivateModal(row.id)" title="Deactivate Job">
+          <i class="fa-solid fa-ban"></i>
+        </button>
+        <button class="btn btn-sm btn-outline-danger ms-2" (click)="openDeleteModal(row.id)" title="Delete Job">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </ng-container>
     </ng-template>
   </app-data-table>
 </div>
@@ -117,3 +132,47 @@
   </form>
 </div>
 
+<!-- Deactivate Modal -->
+<div class="modal fade show" style="display: block; background: rgba(0,0,0,0.5);" *ngIf="showDeactivateModal()">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Deactivate / Reject Job</h5>
+        <button type="button" class="btn-close" (click)="closeDeactivateModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label">Reason for Deactivation/Rejection</label>
+          <textarea class="form-control" rows="3" [formControl]="deactivateReasonCtrl" placeholder="e.g. Position filled, Invalid details..."></textarea>
+          <div class="text-danger small mt-1" *ngIf="deactivateReasonCtrl.invalid && deactivateReasonCtrl.touched">
+            Reason is required.
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" (click)="closeDeactivateModal()">Cancel</button>
+        <button type="button" class="btn btn-warning" (click)="submitDeactivation()">Deactivate Job</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade show" style="display: block; background: rgba(0,0,0,0.5);" *ngIf="showDeleteModal()">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-danger">Delete Job Permanently</h5>
+        <button type="button" class="btn-close" (click)="closeDeleteModal()"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to permanently delete this job? This will also remove any student applications associated with it.</p>
+        <p class="text-danger fw-bold"><i class="fa-solid fa-triangle-exclamation me-2"></i>This action cannot be undone.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" (click)="closeDeleteModal()">Cancel</button>
+        <button type="button" class="btn btn-danger" (click)="submitDelete()">Delete Permanently</button>
+      </div>
+    </div>
+  </div>
+</div>

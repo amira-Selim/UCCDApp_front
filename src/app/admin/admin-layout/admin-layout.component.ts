@@ -62,10 +62,12 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
         { label: 'admin.jobs', icon: 'fa-solid fa-briefcase', link: '/admin/jobs' },
         { label: 'admin.volunteering', icon: 'fa-solid fa-handshake-angle', link: '/admin/volunteers' },
         { label: 'admin.messages', icon: 'fa-solid fa-envelope', link: '/admin/messages' },
+        { label: 'Notifications & Activities', icon: 'fa-solid fa-bell', link: '/admin/notifications' },
       ];
     } else if (this.auth.isCompany()) {
       this.navItems = [
-        { label: 'Company Jobs', icon: 'fa-solid fa-briefcase', link: '/admin/jobs' }
+        { label: 'Company Jobs', icon: 'fa-solid fa-briefcase', link: '/admin/jobs' },
+        { label: 'Notifications & Activities', icon: 'fa-solid fa-bell', link: '/admin/notifications' }
       ];
     }
   }

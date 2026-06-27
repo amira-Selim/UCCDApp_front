@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators, FormControl } from '@angular/forms';
 import { JobsAdminService } from '../../../core/services/admin/jobs-admin.service';
 import { AuthServiceService } from '../../../core/services/auth.service';
 import { IJobApplication, IJobOpportunity } from '../../../core/interfaces/job.model';
@@ -33,6 +33,13 @@ export class JobsListComponent implements OnInit {
   saving = signal(false);
 
   showForm = signal(false);
+  
+  // Modals state
+  showDeactivateModal = signal(false);
+  selectedJobId = signal<number | null>(null);
+  deactivateReasonCtrl = new FormControl('', Validators.required);
+
+  showDeleteModal = signal(false);
 
   columns: TableColumn[] = [
     { key: 'id', label: 'ID', sortable: true, width: '60px' },
@@ -147,5 +154,69 @@ export class JobsListComponent implements OnInit {
   isInvalid(controlName: string): boolean {
     const control = this.jobForm.get(controlName);
     return !!control && control.invalid && (control.dirty || control.touched);
+  }
+
+  approveJob(jobId: number): void {
+    if (!confirm('Are you sure you want to approve this job?')) return;
+    this.jobsService.approveJob(jobId).subscribe({
+      next: () => {
+        this.notify.success('Job approved successfully.');
+        this.loadJobs();
+      },
+      error: () => this.notify.error('Failed to approve job.')
+    });
+  }
+
+  openDeactivateModal(jobId: number): void {
+    this.selectedJobId.set(jobId);
+    this.deactivateReasonCtrl.reset();
+    this.showDeactivateModal.set(true);
+  }
+
+  closeDeactivateModal(): void {
+    this.showDeactivateModal.set(false);
+    this.selectedJobId.set(null);
+  }
+
+  submitDeactivation(): void {
+    if (this.deactivateReasonCtrl.invalid) {
+      this.deactivateReasonCtrl.markAsTouched();
+      return;
+    }
+    const jobId = this.selectedJobId();
+    if (jobId) {
+      this.jobsService.rejectJob(jobId, this.deactivateReasonCtrl.value!).subscribe({
+        next: () => {
+          this.notify.success('Job deactivated successfully.');
+          this.closeDeactivateModal();
+          this.loadJobs();
+        },
+        error: () => this.notify.error('Failed to deactivate job.')
+      });
+    }
+  }
+
+  openDeleteModal(jobId: number): void {
+    this.selectedJobId.set(jobId);
+    this.showDeleteModal.set(true);
+  }
+
+  closeDeleteModal(): void {
+    this.showDeleteModal.set(false);
+    this.selectedJobId.set(null);
+  }
+
+  submitDelete(): void {
+    const jobId = this.selectedJobId();
+    if (jobId) {
+      this.jobsService.deleteJob(jobId).subscribe({
+        next: () => {
+          this.notify.success('Job permanently deleted.');
+          this.closeDeleteModal();
+          this.loadJobs();
+        },
+        error: () => this.notify.error('Failed to delete job.')
+      });
+    }
   }
 }
