@@ -27,7 +27,7 @@ export class CompaniesService {
   }
 
   getCompanyJobs(email: string): Observable<ApiResponse<IJobOpportunity[]>> {
-    return this._http.get<ApiResponse<IJobOpportunity[]>>(`${this.baseUrl}/Jobs/company/${email}`);
+    return this._http.get<ApiResponse<IJobOpportunity[]>>(`${this.baseUrl}/Jobs/company/${encodeURIComponent(email)}`);
   }
 
   approveJob(jobId: number): Observable<ApiResponse<boolean>> {

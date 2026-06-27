@@ -18,6 +18,7 @@ export class CompanyJobsComponent implements OnInit {
   private notify = inject(NotificationService);
 
   companyEmail = '';
+  companyName = '';
   jobs: IJobOpportunity[] = [];
   isLoading = false;
 
@@ -28,6 +29,7 @@ export class CompanyJobsComponent implements OnInit {
 
   ngOnInit(): void {
     this.companyEmail = this.route.snapshot.paramMap.get('email') || '';
+    this.companyName = this.route.snapshot.queryParamMap.get('name') || this.companyEmail;
     if (this.companyEmail) {
       this.loadCompanyJobs();
     }
