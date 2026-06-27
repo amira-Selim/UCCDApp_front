@@ -10,6 +10,7 @@ import { TableColumn } from '../../../shared/components/data-table/table-column.
 import { NotificationService } from '../../../core/services/notification.service';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-jobs-list',
@@ -33,6 +34,7 @@ export class JobsListComponent implements OnInit {
   saving = signal(false);
 
   showForm = signal(false);
+  editingJobId = signal<number | null>(null);
   
   // Modals state
   showDeactivateModal = signal(false);
@@ -92,9 +94,24 @@ export class JobsListComponent implements OnInit {
     });
   }
 
-  openCreateForm(): void {
+  openCreateForm(job?: IJobOpportunity): void {
     this.jobForm.reset();
-    if (this.auth.isCompany()) {
+    this.editingJobId.set(job ? job.id : null);
+
+    if (job) {
+      this.jobForm.patchValue({
+        title: job.title,
+        companyName: job.companyName,
+        companyEmail: job.companyEmail,
+        description: job.description,
+        requirements: job.requirements,
+        location: job.location,
+        type: job.type,
+        salaryRange: job.salaryRange,
+        targetFaculty: job.targetFaculty,
+        deadline: job.deadline ? new Date(job.deadline).toISOString().split('T')[0] : ''
+      });
+    } else if (this.auth.isCompany()) {
       // Auto-fill company details for logged in company
       const currentUser = this.auth.currentUser();
       this.jobForm.patchValue({
@@ -131,18 +148,20 @@ export class JobsListComponent implements OnInit {
       deadline: value.deadline ? new Date(value.deadline as string).toISOString() : null,
     };
 
-    const createObs$ = this.auth.isCompany() ? this.jobsService.createByCompany(createDto) : this.jobsService.create(createDto);
+    const createObs$ = this.editingJobId() 
+      ? this.jobsService.updateByCompany(this.editingJobId()!, createDto as any)
+      : (this.auth.isCompany() ? this.jobsService.createByCompany(createDto as any) : this.jobsService.create(createDto as any));
 
     createObs$.subscribe({
       next: () => {
-        this.notify.success('Job opportunity created successfully.');
+        this.notify.success(this.editingJobId() ? 'Job opportunity updated successfully.' : 'Job opportunity created successfully.');
         this.saving.set(false);
         this.closeForm();
         this.loadJobs();
       },
       error: (err) => {
         this.saving.set(false);
-        this.notify.error(err?.error?.message || 'Failed to create job opportunity.');
+        this.notify.error(err?.error?.message || 'Failed to save job opportunity.');
       }
     });
   }
@@ -154,6 +173,15 @@ export class JobsListComponent implements OnInit {
   isInvalid(controlName: string): boolean {
     const control = this.jobForm.get(controlName);
     return !!control && control.invalid && (control.dirty || control.touched);
+  }
+
+  showRejectionReason(reason: string): void {
+    Swal.fire({
+      title: 'Rejection Reason',
+      text: reason || 'No specific reason provided.',
+      icon: 'info',
+      confirmButtonText: 'Understood'
+    });
   }
 
   approveJob(jobId: number): void {
@@ -209,7 +237,8 @@ export class JobsListComponent implements OnInit {
   submitDelete(): void {
     const jobId = this.selectedJobId();
     if (jobId) {
-      this.jobsService.deleteJob(jobId).subscribe({
+      const deleteObs$ = this.auth.isCompany() ? this.jobsService.deleteByCompany(jobId) : this.jobsService.deleteJob(jobId);
+      deleteObs$.subscribe({
         next: () => {
           this.notify.success('Job permanently deleted.');
           this.closeDeleteModal();

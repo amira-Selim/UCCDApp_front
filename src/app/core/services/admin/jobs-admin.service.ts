@@ -47,4 +47,12 @@ export class JobsAdminService {
   deleteJob(jobId: number): Observable<ApiResponse<boolean>> {
     return this._http.delete<ApiResponse<boolean>>(`${this.baseUrl}/${jobId}`);
   }
+
+  updateByCompany(jobId: number, dto: ICreateJobOpportunity): Observable<ApiResponse<IJobOpportunity>> {
+    return this._http.put<ApiResponse<IJobOpportunity>>(`${this.baseUrl}/company-update/${jobId}`, dto);
+  }
+
+  deleteByCompany(jobId: number): Observable<ApiResponse<boolean>> {
+    return this._http.delete<ApiResponse<boolean>>(`${this.baseUrl}/company-delete/${jobId}`);
+  }
 }
