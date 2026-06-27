@@ -85,4 +85,11 @@ export class JobDetailsComponent implements OnInit {
   closeProfileModal(): void {
     this.showProfileModal.set(false);
   }
+
+  getFullUrl(path: string | undefined): string {
+    if (!path) return '#';
+    if (path.startsWith('http')) return path;
+    if (path.startsWith('/')) return `${environment.baseUrl}${path}`;
+    return `${environment.baseUrl}/${path}`;
+  }
 }

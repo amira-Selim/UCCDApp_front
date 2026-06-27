@@ -49,7 +49,7 @@
           <a [href]="'mailto:' + app.studentEmail" class="btn btn-sm btn-outline-secondary">
             <i class="fa-solid fa-envelope me-1"></i> Email
           </a>
-          <a [href]="app.cvFilePath" target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary">
+          <a [href]="getFullUrl(app.cvFilePath)" target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary">
             <i class="fa-solid fa-file-arrow-down me-1"></i> View CV
           </a>
         </div>
