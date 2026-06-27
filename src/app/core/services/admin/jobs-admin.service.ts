@@ -35,4 +35,16 @@ export class JobsAdminService {
   createByCompany(dto: ICreateJobOpportunity): Observable<ApiResponse<IJobOpportunity>> {
     return this._http.post<ApiResponse<IJobOpportunity>>(`${this.baseUrl}/company-create`, dto);
   }
+
+  approveJob(jobId: number): Observable<ApiResponse<boolean>> {
+    return this._http.put<ApiResponse<boolean>>(`${this.baseUrl}/${jobId}/approve`, {});
+  }
+
+  rejectJob(jobId: number, reason: string): Observable<ApiResponse<boolean>> {
+    return this._http.put<ApiResponse<boolean>>(`${this.baseUrl}/${jobId}/reject`, { reason });
+  }
+
+  deleteJob(jobId: number): Observable<ApiResponse<boolean>> {
+    return this._http.delete<ApiResponse<boolean>>(`${this.baseUrl}/${jobId}`);
+  }
 }
