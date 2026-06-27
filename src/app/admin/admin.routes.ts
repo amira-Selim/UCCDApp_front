@@ -17,6 +17,16 @@ export const ADMIN_ROUTES: Routes = [
     title: 'Admin · Students'
   },
   {
+    path: 'companies',
+    loadComponent: () => import('./pages/companies/companies-list/companies-list.component').then(m => m.CompaniesListComponent),
+    title: 'Admin · Companies'
+  },
+  {
+    path: 'companies/:email',
+    loadComponent: () => import('./pages/companies/company-jobs/company-jobs.component').then(m => m.CompanyJobsComponent),
+    title: 'Admin · Company Jobs'
+  },
+  {
     path: 'courses',
     loadComponent: () => import('./pages/courses/courses-list.component').then(m => m.CoursesListComponent),
     title: 'Admin · Courses'

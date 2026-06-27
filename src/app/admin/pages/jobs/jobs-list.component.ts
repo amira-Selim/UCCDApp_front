@@ -40,7 +40,7 @@ export class JobsListComponent implements OnInit {
     { key: 'companyName', label: 'Company', sortable: true },
     { key: 'location', label: 'Location', sortable: true },
     { key: 'targetFaculty', label: 'Target Faculty', sortable: true },
-    { key: 'isApproved', label: 'Approved', sortable: true, type: 'boolean' },
+    { key: 'statusText', label: 'Status', sortable: true, type: 'badge', badgeMap: { 'Pending': 'bg-warning text-dark', 'Approved': 'bg-success', 'Rejected': 'bg-danger' } },
     { key: 'totalApplicants', label: 'Applicants', sortable: true, width: '100px' },
     { key: 'deadline', label: 'Deadline', sortable: true, type: 'date' },
   ];
@@ -70,7 +70,11 @@ export class JobsListComponent implements OnInit {
     
     obs$.subscribe({
       next: (res) => {
-        this.jobs.set(res.data ?? []);
+        const mappedData = (res.data ?? []).map((j: any) => ({
+          ...j,
+          statusText: j.status === 1 ? 'Approved' : j.status === 2 ? 'Rejected' : 'Pending'
+        }));
+        this.jobs.set(mappedData);
         this.loading.set(false);
       },
       error: () => {

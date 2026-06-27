@@ -9,7 +9,8 @@ export interface IJobOpportunity {
   salaryRange?: number | null;
   type: string;
   targetFaculty: string;
-  isApproved: boolean;
+  status: number; // 0 = Pending, 1 = Approved, 2 = Rejected
+  rejectionReason?: string | null;
   createdAt: string;
   deadline?: string | null;
   totalApplicants: number;

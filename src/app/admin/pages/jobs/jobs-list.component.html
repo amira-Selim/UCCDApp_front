@@ -25,6 +25,9 @@
           <span class="visually-hidden">applicants</span>
         </span>
       </button>
+      <button class="btn btn-sm btn-outline-danger ms-2" *ngIf="row.status === 2" [title]="'Rejection Reason: ' + row.rejectionReason">
+        <i class="fa-solid fa-circle-info"></i>
+      </button>
     </ng-template>
   </app-data-table>
 </div>

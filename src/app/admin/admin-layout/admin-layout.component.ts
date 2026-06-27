@@ -57,6 +57,7 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
       this.navItems = [
         { label: 'admin.dashboard', icon: 'fa-solid fa-gauge-high', link: '/admin/dashboard' },
         { label: 'admin.students', icon: 'fa-solid fa-user-graduate', link: '/admin/students' },
+        { label: 'admin.companies', icon: 'fa-solid fa-building', link: '/admin/companies' },
         { label: 'admin.courses', icon: 'fa-solid fa-book', link: '/admin/courses' },
         { label: 'admin.jobs', icon: 'fa-solid fa-briefcase', link: '/admin/jobs' },
         { label: 'admin.volunteering', icon: 'fa-solid fa-handshake-angle', link: '/admin/volunteers' },
