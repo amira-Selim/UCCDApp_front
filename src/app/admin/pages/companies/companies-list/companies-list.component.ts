@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CompaniesService, ICompany } from '../../../../core/services/admin/companies.service';
 import { NotificationService } from '../../../../core/services/notification.service';
@@ -14,6 +14,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
 export class CompaniesListComponent implements OnInit {
   private companiesService = inject(CompaniesService);
   private notify = inject(NotificationService);
+  private router = inject(Router);
 
   companies: ICompany[] = [];
   isLoading = false;
@@ -74,5 +75,9 @@ export class CompaniesListComponent implements OnInit {
         this.isSubmitting = false;
       }
     });
+  }
+
+  viewCompanyJobs(company: ICompany): void {
+    this.router.navigate(['/admin/companies', company.email], { queryParams: { name: company.name } });
   }
 }
