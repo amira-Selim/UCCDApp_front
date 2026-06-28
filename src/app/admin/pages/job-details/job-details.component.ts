@@ -34,11 +34,16 @@ export class JobDetailsComponent implements OnInit {
   showProfileModal = signal(false);
 
   ngOnInit(): void {
-    const idParam = this.route.snapshot.paramMap.get('id');
-    if (idParam) {
-      this.loadJobDetails(+idParam);
-      this.loadApplications(+idParam);
-    }
+    this.route.paramMap.subscribe(params => {
+      const idParam = params.get('id');
+      if (idParam) {
+        // Show loading state again when ID changes
+        this.loading.set(true);
+        this.applicationsLoading.set(true);
+        this.loadJobDetails(+idParam);
+        this.loadApplications(+idParam);
+      }
+    });
   }
 
   loadJobDetails(id: number): void {

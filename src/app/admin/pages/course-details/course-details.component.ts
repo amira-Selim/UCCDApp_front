@@ -58,19 +58,21 @@ export class CourseDetailsComponent implements OnInit {
   private courseId = 0;
 
   ngOnInit(): void {
-    const idParam = this.route.snapshot.paramMap.get('id');
-    const id = Number(idParam);
+    this.route.paramMap.subscribe(params => {
+      const idParam = params.get('id');
+      const id = Number(idParam);
 
-    if (!idParam || Number.isNaN(id)) {
-      this.courseLoading.set(false);
-      this.studentsLoading.set(false);
-      this.courseError.set('Invalid course id.');
-      return;
-    }
+      if (!idParam || Number.isNaN(id)) {
+        this.courseLoading.set(false);
+        this.studentsLoading.set(false);
+        this.courseError.set('Invalid course id.');
+        return;
+      }
 
-    this.courseId = id;
-    this.loadCourse();
-    this.loadStudents();
+      this.courseId = id;
+      this.loadCourse();
+      this.loadStudents();
+    });
   }
 
   loadCourse(): void {

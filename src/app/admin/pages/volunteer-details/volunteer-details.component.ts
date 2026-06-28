@@ -27,11 +27,15 @@ export class VolunteerDetailsComponent implements OnInit {
   applications = signal<IVolunteerApplication[]>([]);
 
   ngOnInit(): void {
-    const idParam = this.route.snapshot.paramMap.get('id');
-    if (idParam) {
-      this.loadOpportunity(+idParam);
-      this.loadApplications(+idParam);
-    }
+    this.route.paramMap.subscribe(params => {
+      const idParam = params.get('id');
+      if (idParam) {
+        this.loading.set(true);
+        this.applicationsLoading.set(true);
+        this.loadOpportunity(+idParam);
+        this.loadApplications(+idParam);
+      }
+    });
   }
 
   loadOpportunity(id: number): void {

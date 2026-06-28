@@ -28,11 +28,16 @@ export class CompanyJobsComponent implements OnInit {
   isSubmitting = false;
 
   ngOnInit(): void {
-    this.companyEmail = this.route.snapshot.paramMap.get('email') || '';
-    this.companyName = this.route.snapshot.queryParamMap.get('name') || this.companyEmail;
-    if (this.companyEmail) {
-      this.loadCompanyJobs();
-    }
+    this.route.paramMap.subscribe(params => {
+      this.companyEmail = params.get('email') || '';
+      
+      this.route.queryParams.subscribe(queryParams => {
+        this.companyName = queryParams['name'] || this.companyEmail;
+        if (this.companyEmail) {
+          this.loadCompanyJobs();
+        }
+      });
+    });
   }
 
   loadCompanyJobs(): void {
