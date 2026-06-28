@@ -42,6 +42,8 @@ export class ChangePasswordComponent {
             setTimeout(() => {
               if (this._AuthServiceService.isAdmin()) {
                 this._router.navigate(['/admin/dashboard']);
+              } else if (this._AuthServiceService.isCompany()) {
+                this._router.navigate(['/admin/jobs']);
               } else {
                 this._router.navigate(['/home']);
               }
