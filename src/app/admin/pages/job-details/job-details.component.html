@@ -42,19 +42,39 @@
           <p class="mb-0 text-muted small">{{ app.studentEmail }} · {{ app.studentFaculty }}</p>
           <p class="mb-0 text-muted small">Applied {{ app.appliedAt | date:'medium' }}</p>
         </div>
-        <div class="d-flex flex-wrap gap-2">
-          <button (click)="viewApplicantProfile(app.studentId)" class="btn btn-sm btn-outline-info">
-            <i class="fa-solid fa-user me-1"></i> Profile
+        <div class="d-flex align-items-center gap-2">
+          <!-- Cover Letter Icon -->
+          <button *ngIf="app.coverLetter" (click)="viewCoverLetter(app.coverLetter)" class="btn btn-sm btn-light text-warning shadow-sm border" title="View Cover Letter">
+            <i class="fa-solid fa-file-lines"></i>
           </button>
-          <a [href]="'mailto:' + app.studentEmail" class="btn btn-sm btn-outline-secondary">
-            <i class="fa-solid fa-envelope me-1"></i> Email
-          </a>
-          <a [href]="getFullUrl(app.cvFilePath)" target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary">
-            <i class="fa-solid fa-file-arrow-down me-1"></i> View CV
-          </a>
-          <button (click)="viewCoverLetter(app.coverLetter)" class="btn btn-sm btn-outline-warning" title="View Cover Letter">
-            <i class="fa-solid fa-file-lines me-1"></i> Letter
+          <button *ngIf="!app.coverLetter" class="btn btn-sm btn-light text-muted shadow-sm border" disabled title="No Cover Letter">
+            <i class="fa-solid fa-file-excel opacity-50"></i>
           </button>
+
+          <!-- Actions Dropdown -->
+          <div class="dropdown">
+            <button class="btn btn-sm btn-dark dropdown-toggle shadow-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Actions
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-1">
+              <li>
+                <button class="dropdown-item py-2" (click)="viewApplicantProfile(app.studentId)">
+                  <i class="fa-solid fa-user text-info me-2" style="width: 16px; text-align: center;"></i> View Profile
+                </button>
+              </li>
+              <li>
+                <a class="dropdown-item py-2" [href]="'mailto:' + app.studentEmail">
+                  <i class="fa-solid fa-envelope text-secondary me-2" style="width: 16px; text-align: center;"></i> Send Email
+                </a>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <a class="dropdown-item py-2" [href]="getFullUrl(app.cvFilePath)" target="_blank" rel="noopener">
+                  <i class="fa-solid fa-file-pdf text-danger me-2" style="width: 16px; text-align: center;"></i> Download CV
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
 
