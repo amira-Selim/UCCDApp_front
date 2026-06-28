@@ -68,7 +68,7 @@ export class AuthServiceService {
       localStorage.removeItem('requirePasswordChange');
     }
     this.currentUser.set(null);
-    this._router.navigate(['/auth/login']);
+    this._router.navigate(['/home']);
   }
 
   getToken(): string | null {

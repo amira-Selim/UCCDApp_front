@@ -92,9 +92,14 @@
           <i class="fa-regular fa-user text-dark"></i>
         </button>
 
-        <a class="btn btn-main rounded-pill px-4" routerLink="/auth/login" *ngIf="!auth.currentUser()">
-          {{ 'nav.login' | translate }}
-        </a>
+        <ng-container *ngIf="!auth.currentUser()">
+          <a class="btn btn-outline-main rounded-pill px-4" routerLink="/auth/register">
+            {{ 'nav.register' | translate }}
+          </a>
+          <a class="btn btn-main rounded-pill px-4" routerLink="/auth/login">
+            {{ 'nav.login' | translate }}
+          </a>
+        </ng-container>
       </div>
     </div>
   </div>
