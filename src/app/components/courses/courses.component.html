@@ -99,7 +99,7 @@
                     <span class="fs-5 fw-bold text-dark">{{ course.price > 0 ? course.price + ' EGP' : ('courses.free' | translate) }}</span>
                     <div class="d-flex gap-2">
                       <button class="btn btn-light text-danger rounded-circle p-2 shadow-sm action-btn" 
-                              (click)="addToWishlist(course.id, $event, course.name)" 
+                              (click)="addToWishlist(course.id, $event, course.name, course.price)" 
                               [title]="isWishlisted(course.id) ? 'Remove from Wishlist' : 'Add to Wishlist'"
                               [disabled]="auth.isAdmin()">
                         <i class="fa-heart" [class.fa-solid]="isWishlisted(course.id)" [class.fa-regular]="!isWishlisted(course.id)"></i>
@@ -195,7 +195,7 @@
       <div class="modal-footer p-4 bg-light border-0 justify-content-between">
         <button type="button" class="btn btn-outline-secondary rounded-pill px-4" (click)="closeModal()">{{ 'common.close' | translate }}</button>
         <div class="d-flex gap-2">
-          <button class="btn btn-light text-danger rounded-circle p-2 shadow-sm" (click)="addToWishlist(selectedCourse?.id, $event, selectedCourse?.name)" [title]="isWishlisted(selectedCourse?.id) ? 'Remove from Wishlist' : 'Save for later'">
+          <button class="btn btn-light text-danger rounded-circle p-2 shadow-sm" (click)="addToWishlist(selectedCourse?.id, $event, selectedCourse?.name, selectedCourse?.price)" [title]="isWishlisted(selectedCourse?.id) ? 'Remove from Wishlist' : 'Save for later'">
             <i class="fa-heart" [class.fa-solid]="isWishlisted(selectedCourse?.id)" [class.fa-regular]="!isWishlisted(selectedCourse?.id)"></i>
           </button>
           <button type="button" class="btn btn-main rounded-pill px-5 shadow-sm fw-bold" 

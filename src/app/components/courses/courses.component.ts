@@ -148,11 +148,11 @@ export class CoursesComponent implements OnInit {
   }
 
   /** Toggles wishlist membership with an instant (optimistic) heart-icon flip; see WishlistStateService for rollback-on-error handling. */
-  addToWishlist(id: number | undefined | null, event?: Event, courseName?: string): void {
+  addToWishlist(id: number | undefined | null, event?: Event, courseName?: string, price?: number): void {
     if (event) {
       event.stopPropagation(); // Prevent modal from opening if clicked on card
     }
-    this.wishlistState.toggle(id, courseName);
+    this.wishlistState.toggle(id, courseName, price);
   }
 
   /**

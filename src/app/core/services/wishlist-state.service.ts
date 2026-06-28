@@ -47,13 +47,19 @@ export class WishlistStateService {
    */
   ensureLoaded(): void {
     if (this.loaded || this.loading) return;
-    if (!this._auth.isLoggedIn() || !this._auth.hasRole('Student')) return;
+    if (!this._auth.isLoggedIn() || !this._auth.hasRole('Student')) {
+      this.loadFromLocalStorage();
+      return;
+    }
     this.refresh();
   }
 
   /** Forces a fresh fetch from the backend (e.g. after login, or to recover from a desync). */
   refresh(): void {
-    if (!this._auth.isLoggedIn() || !this._auth.hasRole('Student')) return;
+    if (!this._auth.isLoggedIn() || !this._auth.hasRole('Student')) {
+      this.loadFromLocalStorage();
+      return;
+    }
     this.loading = true;
     this._wishlistApi.userWishlist().subscribe({
       next: (res) => {
@@ -68,6 +74,26 @@ export class WishlistStateService {
         this.loading = false;
       }
     });
+  }
+
+  private loadFromLocalStorage(): void {
+    const saved = localStorage.getItem('guest_wishlist');
+    if (saved) {
+      try {
+        const list = JSON.parse(saved);
+        this.items = list;
+        this.wishlistedIds = new Set(list.map((i: any) => i.courseId));
+      } catch (e) { }
+    } else {
+      this.items = [];
+      this.wishlistedIds = new Set();
+    }
+    this.loaded = true;
+    this.loading = false;
+  }
+
+  private saveToLocalStorage(): void {
+    localStorage.setItem('guest_wishlist', JSON.stringify(this.items));
   }
 
   /** Clears cached state - call this on logout so a different user never sees a stale wishlist. */
@@ -96,29 +122,35 @@ export class WishlistStateService {
    * Adds or removes a course from the wishlist, updating local state
    * immediately (optimistic UI) and rolling back if the API call fails.
    */
-  toggle(courseId: number | undefined | null, courseName?: string): void {
+  toggle(courseId: number | undefined | null, courseName?: string, price?: number): void {
     if (!courseId) return;
-
-    if (!this._auth.isLoggedIn()) {
-      this._notify.info('Please sign in to save courses to your wishlist.');
-      this._router.navigate(['/auth/login'], { queryParams: { returnUrl: this._router.url } });
-      return;
-    }
 
     if (this.isWishlisted(courseId)) {
       this.removeOptimistic(courseId, courseName);
     } else {
-      this.addOptimistic(courseId, courseName);
+      this.addOptimistic(courseId, courseName, price);
     }
   }
 
-  private addOptimistic(courseId: number, courseName?: string): void {
+  private addOptimistic(courseId: number, courseName?: string, price?: number): void {
     this.wishlistedIds.add(courseId);
+
+    if (!this._auth.isLoggedIn() || !this._auth.hasRole('Student')) {
+      const newItem: IWishlistItem = {
+        id: Date.now(),
+        courseId: courseId,
+        courseName: courseName || 'Course',
+        price: price || 0,
+        addedDate: new Date().toISOString()
+      };
+      this.items = [...this.items.filter(i => i.courseId !== courseId), newItem];
+      this.saveToLocalStorage();
+      this._notify.success(`${courseName || 'Course'} added to your wishlist!`);
+      return;
+    }
 
     this._wishlistApi.addToWishlist(courseId).subscribe({
       next: (res) => {
-        // Refresh the cached item list (cheap - only happens on a successful add) so the
-        // Wishlist page shows correct course name/price without a second round trip.
         const added = res?.data;
         if (added) {
           this.items = [...this.items.filter(i => i.courseId !== courseId), added];
@@ -126,10 +158,8 @@ export class WishlistStateService {
         this._notify.success(res?.message || `${courseName || 'Course'} added to your wishlist!`);
       },
       error: (err) => {
-        // Rollback: the add failed, so the heart shouldn't have turned red.
         this.wishlistedIds.delete(courseId);
         if (err?.status === 409) {
-          // Already in wishlist server-side (state had drifted) - treat as success, not an error.
           this.wishlistedIds.add(courseId);
           this.refresh();
           return;
@@ -145,12 +175,17 @@ export class WishlistStateService {
     const previousItems = this.items;
     this.items = this.items.filter(i => i.courseId !== courseId);
 
+    if (!this._auth.isLoggedIn() || !this._auth.hasRole('Student')) {
+      this.saveToLocalStorage();
+      this._notify.success(`${courseName || 'Course'} removed from your wishlist.`);
+      return;
+    }
+
     this._wishlistApi.deleteProduct(courseId).subscribe({
       next: () => {
         this._notify.success(`${courseName || 'Course'} removed from your wishlist.`);
       },
       error: (err) => {
-        // Rollback: the remove failed, so the heart should stay red.
         this.wishlistedIds.add(courseId);
         this.items = previousItems;
         console.error('Error removing from wishlist', err);
@@ -159,3 +194,4 @@ export class WishlistStateService {
     });
   }
 }
+
