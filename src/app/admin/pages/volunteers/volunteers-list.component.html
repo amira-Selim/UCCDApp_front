@@ -16,7 +16,8 @@
     [error]="error()"
     searchPlaceholder="Search by title or committee..."
     emptyMessage="No volunteer opportunities found"
-    emptyIcon="fa-solid fa-handshake-angle">
+    emptyIcon="fa-solid fa-handshake-angle"
+    (rowClicked)="viewApplications($event)">
     <ng-template #rowActions let-row>
       <button class="btn btn-sm btn-outline-secondary me-1" (click)="openEditForm(row)" title="Edit">
         <i class="fa-solid fa-pen"></i>
