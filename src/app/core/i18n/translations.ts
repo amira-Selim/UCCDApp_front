@@ -47,6 +47,7 @@ export const TRANSLATIONS: Record<string, { en: string; ar: string }> = {
   'nav.workshops': { en: 'Workshops', ar: 'ورش العمل' },
   'nav.jobOpportunities': { en: 'Job Opportunities', ar: 'فرص العمل' },
   'nav.login': { en: 'Login', ar: 'تسجيل الدخول' },
+  'nav.register': { en: 'Register', ar: 'إنشاء حساب' },
   'nav.admin': { en: 'Admin', ar: 'الإدارة' },
 
   // ---------------- courses ----------------

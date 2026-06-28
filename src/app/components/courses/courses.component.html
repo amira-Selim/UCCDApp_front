@@ -8,7 +8,7 @@
       </div>
       <div class="col-lg-6">
         <div class="d-flex flex-column flex-sm-row gap-3 mt-4 mt-lg-0 justify-content-lg-end">
-          <button class="btn btn-light text-main rounded-pill px-4 shadow-sm fw-bold d-flex align-items-center justify-content-center text-nowrap" (click)="openAiModal()">
+          <button *ngIf="auth.isLoggedIn()" class="btn btn-light text-main rounded-pill px-4 shadow-sm fw-bold d-flex align-items-center justify-content-center text-nowrap" (click)="openAiModal()">
             <i class="fa-solid fa-wand-magic-sparkles me-2"></i> Suggest Courses
           </button>
           <div class="search-box bg-white p-2 rounded-pill shadow-sm d-flex align-items-center border flex-grow-1" style="max-width: 400px;">
@@ -29,18 +29,20 @@
         <div class="premium-card p-4 border-0 sticky-top" style="top: 100px;">
           <h5 class="fw-bold mb-4 font-heading border-bottom pb-2">Categories</h5>
           <ul class="list-unstyled mb-0">
-            <li class="mb-2" *ngFor="let cat of categories">
-              <button class="btn w-100 text-start px-3 py-2 border-0 rounded-3 text-muted fw-medium category-btn position-relative" 
-                      [class.text-main]="selectedCategory === cat"
-                      [class.fw-bold]="selectedCategory === cat"
-                      (click)="setCategory(cat)">
-                <i class="fa-solid" [class.fa-angle-right]="selectedCategory !== cat" [class.fa-check]="selectedCategory === cat" class="me-2 small transition-normal"></i> 
-                <span [class.border-bottom]="selectedCategory === cat" [class.border-main]="selectedCategory === cat" [class.border-2]="selectedCategory === cat" style="padding-bottom: 2px;">
-                  <i *ngIf="cat === 'Recommended'" class="fa-solid fa-wand-magic-sparkles text-main me-1"></i>
-                  {{ cat }}
-                </span>
-              </button>
-            </li>
+            <ng-container *ngFor="let cat of categories">
+              <li class="mb-2" *ngIf="cat !== 'Recommended' || auth.isLoggedIn()">
+                <button class="btn w-100 text-start px-3 py-2 border-0 rounded-3 text-muted fw-medium category-btn position-relative" 
+                        [class.text-main]="selectedCategory === cat"
+                        [class.fw-bold]="selectedCategory === cat"
+                        (click)="setCategory(cat)">
+                  <i class="fa-solid" [class.fa-angle-right]="selectedCategory !== cat" [class.fa-check]="selectedCategory === cat" class="me-2 small transition-normal"></i> 
+                  <span [class.border-bottom]="selectedCategory === cat" [class.border-main]="selectedCategory === cat" [class.border-2]="selectedCategory === cat" style="padding-bottom: 2px;">
+                    <i *ngIf="cat === 'Recommended'" class="fa-solid fa-wand-magic-sparkles text-main me-1"></i>
+                    {{ cat }}
+                  </span>
+                </button>
+              </li>
+            </ng-container>
           </ul>
         </div>
       </div>
