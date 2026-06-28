@@ -14,17 +14,24 @@
         <li class="nav-item px-1">
           <a class="nav-link px-3 rounded-pill" routerLink="/home" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">{{ 'sidebar.home' | translate }}</a>
         </li>
-        <li class="nav-item dropdown px-1">
-          <a class="nav-link px-3 rounded-pill dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" routerLinkActive="active-link">
-            {{ 'nav.services' | translate }}
-          </a>
-          <ul class="dropdown-menu border-0 shadow-lg rounded-3 mt-2">
-            <li><a class="dropdown-item py-2" routerLink="/courses" routerLinkActive="active-link">{{ 'sidebar.courses' | translate }}</a></li>
-
-            <li><a class="dropdown-item py-2" routerLink="/volunteering" routerLinkActive="active-link">{{ 'sidebar.volunteering' | translate }}</a></li>
-            <li><a class="dropdown-item py-2" routerLink="/jobs" routerLinkActive="active-link">{{ 'nav.jobOpportunities' | translate }}</a></li>
-          </ul>
-        </li>
+        <ng-container *ngIf="auth.currentUser()">
+          <li class="nav-item dropdown px-1">
+            <a class="nav-link px-3 rounded-pill dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" routerLinkActive="active-link">
+              {{ 'nav.services' | translate }}
+            </a>
+            <ul class="dropdown-menu border-0 shadow-lg rounded-3 mt-2">
+              <li><a class="dropdown-item py-2" routerLink="/courses" routerLinkActive="active-link">{{ 'sidebar.courses' | translate }}</a></li>
+              <li><a class="dropdown-item py-2" routerLink="/volunteering" routerLinkActive="active-link">{{ 'sidebar.volunteering' | translate }}</a></li>
+              <li><a class="dropdown-item py-2" routerLink="/jobs" routerLinkActive="active-link">{{ 'nav.jobOpportunities' | translate }}</a></li>
+            </ul>
+          </li>
+        </ng-container>
+        
+        <ng-container *ngIf="!auth.currentUser()">
+          <li class="nav-item px-1">
+            <a class="nav-link px-3 rounded-pill" routerLink="/courses" routerLinkActive="active-link">{{ 'sidebar.courses' | translate }}</a>
+          </li>
+        </ng-container>
         <li class="nav-item px-1">
           <a class="nav-link px-3 rounded-pill" routerLink="/wish-list" routerLinkActive="active-link">{{ 'sidebar.wishlist' | translate }}</a>
         </li>

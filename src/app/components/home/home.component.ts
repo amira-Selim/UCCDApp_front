@@ -15,8 +15,11 @@ import * as AOS from 'aos';
 export class HomeComponent implements OnInit, AfterViewInit {
 
   _authService = inject(AuthServiceService);
+  isBrowser = false;
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) { }
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+  }
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {

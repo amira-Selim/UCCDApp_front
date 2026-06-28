@@ -1,7 +1,7 @@
 <!-- Hero Section (1st) -->
 <section class="p-0 position-relative">
   <div class="container-fluid p-0 hero-carousel-wrapper">
-    <owl-carousel-o [options]="customOptionsTop">
+    <owl-carousel-o [options]="customOptionsTop" *ngIf="isBrowser">
       <ng-template carouselSlide>
         <div class="hero-slide" style="background-image: url('./assets/images/team 1.jpg');">
           <div class="hero-overlay"></div>
@@ -203,7 +203,7 @@
       </h2>
     </div>
 
-    <owl-carousel-o [options]="testimonialOptions">
+    <owl-carousel-o [options]="testimonialOptions" *ngIf="isBrowser">
       <ng-template carouselSlide *ngFor="let t of testimonials">
         <div class="premium-card p-4 h-100 mx-2 text-center my-3">
           <div class="mb-3 text-warning">
